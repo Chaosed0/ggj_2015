@@ -6,14 +6,15 @@ define(['crafty', 'jquery', './Util',
         './SlashAttack',
         './HurtEnemy',
         './Expires',
+        './generator'
     ], function(Crafty, $, util) {
     var self = this;
     var map;
     
-    var width = 800;
-    var height = 600;
+    var width = $(document).width();
+    var height = $(document).height();
     var gameElem = document.getElementById('game');
-	var scale = 2.0;
+	var scale = 1.0;
 
     Crafty.init(width, height, gameElem);  			  		
                         
@@ -21,7 +22,7 @@ define(['crafty', 'jquery', './Util',
                                     
         console.log("MAIN");
 
-		var wallPolygon = new Crafty.polygon([[0, 0], [100, 100], [500, 200]]);
+		/*var wallPolygon = new Crafty.polygon([[0, 0], [100, 100], [500, 200]]);
         var boundBox = util.getBoundBox(wallPolygon);
         console.log(boundBox);
 
@@ -35,13 +36,24 @@ define(['crafty', 'jquery', './Util',
             .attr({x: -100, y: -100, w: 200, h: 200, z: -1})
             .collision()
             .color("#FFFFFF");
+        */
+
+        var g = Crafty.e("Generator");
+        var island = g.generateIsland(); 
+        var radius = island[0];
+        var center = island[1];
+        var tilesize = g.tilesize;
 
         //Player
         var player = Crafty.e("2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
-            .attr({ x: 0, y: 0, z: 10, w: 8, h: 8 })
-            .text("@")
-            .textFont({size: "10px"})
-            .fourway(2)
+            .attr({ 
+                x: center[0] + radius/2, 
+                y: center[1] + radius/2, 
+                z: 10, w: 8, h: 8 
+            })
+            .text("ಠ")
+            .textFont({size: tilesize + "px"})
+            .fourway(tilesize/4)
             .collision()
             .collisionresolver('Solid')
             .stayon("Ground")
@@ -51,7 +63,7 @@ define(['crafty', 'jquery', './Util',
 				Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
 			});
 
-		Crafty.background("#BB7799");
+		//Crafty.background("#BB7799");
 		Crafty.viewport.x = - (player.x - width/2.0/scale + player.w);
 		Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
 		Crafty.viewport.scale(scale);

@@ -34,6 +34,19 @@ define(function() {
                 w: maxPoint.x - minPoint.x,
                 h: maxPoint.y - minPoint.y};
         },
+
+        searchContains: function(searches, types) {
+            for (var i = 0; i < searches.length; i++) {
+                for (var j = 0; j < searches[i].length; j++) {
+                    for (var k = 0; k < types.length; k++) {
+                        if (searches[i][j].has(types[k])) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 
     return exports;
