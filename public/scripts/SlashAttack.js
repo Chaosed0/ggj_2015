@@ -19,15 +19,13 @@ define(['crafty'], function(Crafty) {
             var p2 = {x: origin.x + conelength * Math.cos(angle+coneangle/2.0),
                       y: origin.y + conelength * Math.sin(angle+coneangle/2.0)};
 
-            //Passing by reference does something stupid and I don't know what
-            var conepoly = [[origin.x,origin.y], [p1.x, p1.y], [p2.x, p2.y]];
-            var colpoly = new Crafty.polygon([[origin.x,origin.y], [p1.x, p1.y], [p2.x, p2.y]]);
+            var conepoly = new Crafty.polygon([[origin.x,origin.y], [p1.x, p1.y], [p2.x, p2.y]]);
 
             var attackCone = Crafty.e("2D, Canvas, Polygon, Expires, Collision, HurtEnemy")
                 .attr({x: this._x, y: this._y, z: 10})
                 .polygon(conepoly, conecolor)
+                .collision(conepoly)
                 .expires(conetime)
-                .collision(colpoly)
                 .hurtenemy(this._enemycomp);
         }
     }

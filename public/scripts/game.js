@@ -28,8 +28,8 @@ define(['crafty', 'jquery', './Util',
 		//A wall
 		var solid = Crafty.e("2D, Canvas, Polygon, Collision, Solid")
 			.attr({x: 0, y: 0, w:boundBox.x+boundBox.w, h:boundBox.y+boundBox.h})
-            .collision(wallPolygon)
-            .polygon(wallPolygon.points, "#BB00BB");
+            .polygon(wallPolygon, "#BB00BB")
+            .collision(wallPolygon);
 
         var stayon = Crafty.e("2D, Canvas, Color, Collision, Ground")
             .attr({x: -100, y: -100, w: 200, h: 200, z: -1})
