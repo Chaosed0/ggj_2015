@@ -13,7 +13,6 @@ define(['crafty'], function(Crafty) {
                 var data = collisions[i];
                 if(data.obj.has(this._stayoncomp)) {
                     found = true;
-                    console.log("www");
                     break;
                 }
             }
