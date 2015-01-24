@@ -1,8 +1,8 @@
 
-define(['crafty', 'jquery',
+define(['crafty', 'jquery', './Util',
         './CollisionResolver',
         './Polygon'
-    ], function(Crafty, $) {
+    ], function(Crafty, $, util) {
     var self = this;
     var map;
     
@@ -17,18 +17,15 @@ define(['crafty', 'jquery',
                                     
         console.log("MAIN");
 
-		var wallPolygon = new Crafty.polygon([[100, 100], [200, 200], [500, 200]]);
+		var wallPolygon = new Crafty.polygon([[0, 0], [100, 100], [500, 200]]);
+        var boundBox = util.getBoundBox(wallPolygon);
+        console.log(boundBox);
 
 		//A wall
 		var wall = Crafty.e("2D, Canvas, Polygon, Collision, Wall")
-			.attr({x: 0, y: 0})
+			.attr({x: 0, y: 0, w:boundBox.x+boundBox.w, h:boundBox.y+boundBox.h})
             .collision(wallPolygon)
             .polygon(wallPolygon.points, "#BB00BB");
-
-		/*var box = Crafty.e("2D, Canvas, Color, Collision, Wall")
-			.attr({x: 20, y: 20, w: 50, h: 50})
-            .collision()
-            .color(255, 255, 255);*/
 
         //Player
         var player = Crafty.e("2D, Canvas, Color, Fourway, CollisionResolver, Collision")

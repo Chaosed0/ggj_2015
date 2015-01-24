@@ -8,6 +8,7 @@ define(['crafty'], function(Crafty) {
         //If we're intersecting, push the player out
         if (gotHit) {
             var data = collisions[0];
+
             this.x -= data.normal.x * data.overlap;
             this.y -= data.normal.y * data.overlap;
             this.trigger("Hit", data);
