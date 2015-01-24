@@ -13,7 +13,6 @@ define(['crafty'], function(Crafty) {
             this.y -= data.normal.y * data.overlap;
             this.trigger("Hit", data);
         }
-        this.z = Math.floor(this._y + this._h);
     };
 
     Crafty.c("CollisionResolver", {
