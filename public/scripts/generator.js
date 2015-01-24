@@ -72,12 +72,14 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
     	tilesize:32,
     	width: 6400,
     	height: 6400,
+    	treeDensity: .2,
 
 
     	configure: function(properties) {
     		for (p in properties) {
     			this[p] = properties[p];
     		}
+    		return this;
     	},
 
     	adjustToTilesize: function(v) {
@@ -113,7 +115,7 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
 
     		var n = Math.round(Math.random() * maxRivers);
 	        var previousY = center[1] + radius/2 + (.5 - Math.random()) * radius/4;
-	        //var n = 1;
+	        var n = 1;
 	        for (var i = 0; i < n; i++) {
 	            // Pick starting point
 	            var origins = [];
@@ -184,7 +186,7 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
 
 	            var boundBox = util.getBoundBox(treePolygon);
 	            var tree = Crafty.e("2D, Canvas, Polygon, Collision, Solid, Tree")
-	                .attr({z: 11, x: x, y: y, w:w, h:h})
+	                .attr({z: 11, x: x, y: y, w:w, h:h-this.tilesize/2})
 	                .polygon(treePolygon, treeColor)
 	                .collision(trunkPolygon);
 	        }
@@ -205,7 +207,7 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
 
 	        this.generateRivers(radius, center, 1);
 	        
-	        this.generateTrees(radius, center, .2);
+	        this.generateTrees(radius, center, this.treeDensity);
 
 	        return [radius, center];
 

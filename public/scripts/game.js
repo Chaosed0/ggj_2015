@@ -1,5 +1,5 @@
 
-define(['crafty', 'jquery', './Util',
+define(['crafty', 'jquery', './Util', './astar',
         './CollisionResolver',
         './Polygon',
         './StayOn',
@@ -7,38 +7,30 @@ define(['crafty', 'jquery', './Util',
         './HurtEnemy',
         './Expires',
         './generator'
-    ], function(Crafty, $, util) {
+    ], function(Crafty, $, util, Pathfinder) {
     var self = this;
-    var map;
-    
+    var map;   
     var width = $(document).width();
     var height = $(document).height();
     var gameElem = document.getElementById('game');
 	var scale = 1.0;
 
-    Crafty.init(width, height, gameElem);  			  		
+    Crafty.init(width, height, gameElem);                        
+
+    Crafty.scene("Load", function() {
+
+        var Load = Crafty.e("2D, Canvas, Text")
+            .attr({x: width/2.0 - 120, y: height/2.0})
+            .text("Loading");
+
+        Crafty.scene("Main");
+    });
                         
     Crafty.scene("Main", function () {
                                     
         console.log("MAIN");
 
-		/*var wallPolygon = new Crafty.polygon([[0, 0], [100, 100], [500, 200]]);
-        var boundBox = util.getBoundBox(wallPolygon);
-        console.log(boundBox);
-
-		//A wall
-		var solid = Crafty.e("2D, Canvas, Polygon, Collision, Solid")
-			.attr({x: 0, y: 0, w:boundBox.x+boundBox.w, h:boundBox.y+boundBox.h})
-            .polygon(wallPolygon, "#BB00BB")
-            .collision(wallPolygon);
-
-        var stayon = Crafty.e("2D, Canvas, Color, Collision, Ground")
-            .attr({x: -100, y: -100, w: 200, h: 200, z: -1})
-            .collision()
-            .color("#FFFFFF");
-        */
-
-        var g = Crafty.e("Generator");
+        var g = Crafty.e("Generator").configure({width: 1000, height: 1000, treeDensity:.05});
         var island = g.generateIsland(); 
         var radius = island[0];
         var center = island[1];
@@ -58,17 +50,20 @@ define(['crafty', 'jquery', './Util',
             .collisionresolver('Solid')
             .stayon("Ground")
             .slashattack(Crafty.keys.SPACE, "Enemy")
-			.bind("Moved", function(oldpos) {
-				Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
-				Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
-			});
+            .bind("Moved", function(oldpos) {
+                Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
+                Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
+            });
 
-		//Crafty.background("#BB7799");
-		Crafty.viewport.x = - (player.x - width/2.0/scale + player.w);
-		Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
-		Crafty.viewport.scale(scale);
-		Crafty.pixelart(true);
+        Crafty.viewport.x = - (player.x - width/2.0/scale + player.w);
+        Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
+        Crafty.viewport.scale(scale);
+        Crafty.pixelart(true);
+
+        var pathfinder = new Pathfinder();
+        pathfinder.buildmap();
+        pathfinder.render();
     });
     
-    Crafty.scene("Main");
+    Crafty.scene("Load");
 });
