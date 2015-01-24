@@ -8,6 +8,7 @@ define(['crafty'], function(Crafty) {
         _enterframe: function(data) {
             this._timer += data.dt;
             if(this._timer > this._time) {
+                this.trigger("Invalidate");
                 this.destroy();
             }
         },

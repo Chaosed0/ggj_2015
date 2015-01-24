@@ -3,6 +3,9 @@ define(['crafty', 'jquery', './Util',
         './CollisionResolver',
         './Polygon',
         './StayOn',
+        './SlashAttack',
+        './HurtEnemy',
+        './Expires',
     ], function(Crafty, $, util) {
     var self = this;
     var map;
@@ -10,7 +13,7 @@ define(['crafty', 'jquery', './Util',
     var width = 800;
     var height = 600;
     var gameElem = document.getElementById('game');
-	var scale = 1.0;
+	var scale = 2.0;
 
     Crafty.init(width, height, gameElem);  			  		
                         
@@ -23,7 +26,7 @@ define(['crafty', 'jquery', './Util',
         console.log(boundBox);
 
 		//A wall
-		var wall = Crafty.e("2D, Canvas, Polygon, Collision, Wall")
+		var solid = Crafty.e("2D, Canvas, Polygon, Collision, Solid")
 			.attr({x: 0, y: 0, w:boundBox.x+boundBox.w, h:boundBox.y+boundBox.h})
             .collision(wallPolygon)
             .polygon(wallPolygon.points, "#BB00BB");
@@ -34,13 +37,15 @@ define(['crafty', 'jquery', './Util',
             .color("#FFFFFF");
 
         //Player
-        var player = Crafty.e("2D, Canvas, Color, Fourway, CollisionResolver, StayOn, Collision")
+        var player = Crafty.e("2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
             .attr({ x: 0, y: 0, z: 10, w: 8, h: 8 })
-			.color(0, 0, 0)
+            .text("@")
+            .textFont({size: "10px"})
             .fourway(2)
             .collision()
-            .collisionresolver('Wall')
+            .collisionresolver('Solid')
             .stayon("Ground")
+            .slashattack(Crafty.keys.SPACE, "Enemy")
 			.bind("Moved", function(oldpos) {
 				Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
 				Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
