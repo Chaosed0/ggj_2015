@@ -41,15 +41,15 @@ define(['crafty'], function(Crafty) {
         },
 
         polygon: function(polygon, color) {
+            //Collision modifies the polygon by reference, so
+            // clone the polygon
+            //XXX: Try to remember to submit a crafty bug report
+            // for this, collision really shouldn't modify
             this._points = polygon.points.map(function(i) {
                 return i.map(function(j) { return j; });
             });
             this._color = color;
             this.trigger('Invalidate');
-
-            if (this.collision) {
-                this.collision(polygon);
-            }
 
             return this;
         },
