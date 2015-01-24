@@ -40,10 +40,17 @@ define(['crafty'], function(Crafty) {
             this.trigger("Invalidate");
         },
 
-        polygon: function(points, color) {
-            this._points = points;
+        polygon: function(polygon, color) {
+            this._points = polygon.points.map(function(i) {
+                return i.map(function(j) { return j; });
+            });
             this._color = color;
             this.trigger('Invalidate');
+
+            if (this.collision) {
+                this.collision(polygon);
+            }
+
             return this;
         },
     });
