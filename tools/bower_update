@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd public
+../node_modules/.bin/bower-requirejs -c scripts/main.js "$@"
