@@ -1,7 +1,8 @@
 
 define(['crafty', 'jquery', './Util',
         './CollisionResolver',
-        './Polygon'
+        './Polygon',
+        './StayOn',
     ], function(Crafty, $, util) {
     var self = this;
     var map;
@@ -27,13 +28,19 @@ define(['crafty', 'jquery', './Util',
             .collision(wallPolygon)
             .polygon(wallPolygon.points, "#BB00BB");
 
+        var stayon = Crafty.e("2D, Canvas, Color, Collision, Ground")
+            .attr({x: -100, y: -100, w: 200, h: 200, z: -1})
+            .collision()
+            .color("#FFFFFF");
+
         //Player
-        var player = Crafty.e("2D, Canvas, Color, Fourway, CollisionResolver, Collision")
+        var player = Crafty.e("2D, Canvas, Color, Fourway, CollisionResolver, StayOn, Collision")
             .attr({ x: 0, y: 0, z: 10, w: 8, h: 8 })
 			.color(0, 0, 0)
             .fourway(2)
             .collision()
             .collisionresolver('Wall')
+            .stayon("Ground")
 			.bind("Moved", function(oldpos) {
 				Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
 				Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
