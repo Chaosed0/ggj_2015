@@ -18,7 +18,7 @@ define(['crafty'], function(Crafty) {
             e.ctx.fillStyle = this._color;
 
             e.ctx.beginPath();
-            e.ctx.moveTo(this._points[0][0], this._points[0][1]);
+            e.ctx.moveTo(this._x + this._points[0][0], this._y + this._points[0][1]);
 
             for(var i = 1; i < this._points.length; i++) {
                 var p = this._points[i];
