@@ -197,9 +197,11 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     	pickNumberRaces: function(radius) {
     		if (radius >= 6000) {
     			return 9;
-    		} else {
+    		} else if (radius >= 2000) {
     			return 4;
-    		}
+    		} else {
+                return 1;
+            }
     	},
 
     	generateIsland: function(width, height) {
@@ -211,11 +213,15 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 	        var radius = this.adjustToTilesize(Math.round(Math.min(width, height) * (.7 - (Math.random()/2))));
 	        var center = [width/2 - radius/2, height/2 - radius/2];
 
+            this.trigger("PreIsland", {radius: radius, center: center});
+
 	        this.generateLand(radius, center);
 
 	        this.generateRivers(radius, center, 1);
 	        
 	        this.generateTrees(radius, center, this.treeDensity);
+
+            this.trigger("PostIsland");
 
 	        var numberRaces = this.pickNumberRaces(radius);
 	        this.generateRaces(radius, center, numberRaces);
@@ -255,6 +261,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     	},
 
     	generateNPCs: function(radius, center) {
+            var pathing = false;
     		for (var i = 0; i < this.races.length; i++) {
     			var race = this.races[i];
     			for (var j = 0; j < race.population; j++) {
@@ -279,7 +286,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		            }
 
 
-    				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid, NPC")
+    				var guy = Crafty.e("2D, Canvas, Text, Collision, Solid, NPC")
 			            .attr({ 
 			                x: x, 
 			                y: y, 
@@ -291,11 +298,16 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            .text(race.character)
 			            .textFont({size: w + "px"})
 			            .collision()
-			            .collisionresolver('Solid')
-			            .stayon("Ground")
 			            .bind("HitPlayer", function(data) {
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
+
+                    if(!pathing && this.pathfinder) {
+                        pathing = true;
+                        guy.addComponent(this.pathfinder, "Pathing")
+                            .pathing(this.pathfinder, "Player");
+                        guy.startPathing();
+                    }
     			}
     		}
     	}
