@@ -58,6 +58,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
 		}
 		
         Crafty.scene("Main");
+
+        Crafty.audio.play("overworld", -1);
     });
                         
     Crafty.scene("Main", function () {
@@ -88,21 +90,25 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                     if (all.length == 1){
                         if (!dialog.currentlyPlaying)
                         {
-                            if (window.level < window.lastLevel) {
-                                this.destroy();
-                                Crafty.scene("Main");
-                            } else if(!this.worlddead) {
+                            var _this = this;
+                            if (!this.worlddead) {
                                 this.worlddead = true;
-                                var _this = this;
-                                setTimeout(function() {
-                                    _this.destroy();
+                                if (window.level < window.lastLevel) {
                                     setTimeout(function() {
-                                        console.log("aaa");
-                                        dialog.credits = true;
-                                        Crafty.audio.play("credits", -1);
-                                        dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
+                                        _this.destroy();
+                                        Crafty.scene("Main");
+                                    }, 500);
+                                } else {
+                                    setTimeout(function() {
+                                        _this.destroy();
+                                        setTimeout(function() {
+                                            console.log("aaa");
+                                            dialog.credits = true;
+                                            Crafty.audio.play("credits", -1);
+                                            dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
+                                        }, 2000);
                                     }, 2000);
-                                }, 2000);
+                                }
                             }
                         }
                     } else if (all.length == 2) {
@@ -178,8 +184,6 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
-
-        Crafty.audio.play("overworld", -1);
     });
     
     Crafty.scene("Load");
