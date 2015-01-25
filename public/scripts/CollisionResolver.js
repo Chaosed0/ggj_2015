@@ -24,6 +24,7 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
                 this.textColor("#FF0000");
                 this.fourway(0);
                 dialog.playDialog(0, 250, 30);
+                this.trigger("PlayDialog");
                 this.destroyWorld = true;
             }
         }
