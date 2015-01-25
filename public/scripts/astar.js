@@ -1,5 +1,5 @@
 
-define(['crafty'], function(Crafty) {
+define(['crafty', './Util'], function(Crafty, Util) {
     var gridsize = 20;
     var groundComponent = "Ground";
     var solidComponent = "Solid";
@@ -66,34 +66,45 @@ define(['crafty'], function(Crafty) {
 
         return {
             buildmap: function() {
-                bounds = Crafty.map.boundaries();
+                var actualbounds = Crafty.map.boundaries();
+                bounds = {};
+                bounds.min = {};
+                bounds.max = {};
+                bounds.min.x = Math.floor(actualbounds.min.x / gridsize) * gridsize;
+                bounds.min.y = Math.floor(actualbounds.min.y / gridsize) * gridsize;
+                bounds.max.x = Math.ceil(actualbounds.max.x / gridsize) * gridsize;
+                bounds.max.y = Math.ceil(actualbounds.max.y / gridsize) * gridsize;
                 width = (bounds.max.x - bounds.min.x) / gridsize;
                 height = (bounds.max.y - bounds.min.y) / gridsize;
 
                 for(var y = bounds.min.y; y < bounds.max.y; y += gridsize) {
                     for(var x = bounds.min.x; x < bounds.max.x; x += gridsize) {
                         var passable = false;
-                        var rect = {_x: x, _y: y, _w: gridsize, _h: gridsize};
+                        var rect = {_x: x, _y: y, _w: gridsize, _h: gridsize,
+                                     x: x,  y: y,  w: gridsize,  h: gridsize};
                         var ents = Crafty.map.search(rect, true);
                         for(var i = 0; i < ents.length; i++) {
+                            var collidingEntity = ents[i];
 
-                            var hitting = true;
-                            if(ents[i].has("Polygon")) {
-                                //Do additional checks for polygon; map.search seems
-                                // to use bounding box which might not be good enough
-                                var coltest = Crafty.e("2D, Collision, COLTEST")
-                                    .attr({x: rect._x, y: rect._y, w: rect._w, h: rect._h})
-                                    .collision();
-                                var collisions = ents[i].hit("COLTEST");
-                                hitting = (collisions != false);
-                                coltest.destroy();
-                            }
-
-                            if(hitting && ents[i].has(groundComponent)) {
+                            if(collidingEntity.has(groundComponent)) {
                                 passable = true;
-                            } else if(hitting && ents[i].has(solidComponent)) {
-                                passable = false;
-                                break;
+                            } else if(collidingEntity.has(solidComponent)) {
+
+                                //Map.search searches by minimum bounding box,
+                                // we need to search by collision bounding box
+                                var colliding = true;
+                                if(collidingEntity.map) {
+                                    var poly = new Crafty.polygon([[x, y],
+                                        [x + gridsize, y],
+                                        [x + gridsize, y + gridsize],
+                                        [x, y + gridsize]]);
+                                    colliding = Util.SAT(collidingEntity.map, poly);
+                                }
+
+                                if(colliding) {
+                                    passable = false;
+                                    break;
+                                }
                             }
                         }
                         map.push(passable);
