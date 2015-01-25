@@ -112,7 +112,7 @@ define(['jquery'], function($) {
 	                var gainNode = this.audioContext.createGain();
 	                osc.connect(gainNode);
 	                gainNode.connect(this.audioContext.destination);
-	                gainNode.gain.value = .5;
+	                gainNode.gain.value = .35;
 
 	                osc.start(0);
 	            }

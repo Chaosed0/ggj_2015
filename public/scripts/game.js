@@ -16,7 +16,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     var gameElem = document.getElementById('game');
 	var scale = 1;
     window.level = 0;
-    window.lastLevel = 10000;
+    window.lastLevel = 2000;
     window.levelInc = 2000;
 
     dialog.init(width, height);
@@ -29,6 +29,18 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         var Load = Crafty.e("2D, Canvas, Text")
             .attr({x: width/2.0 - 120, y: height/2.0})
             .text("Loading");
+
+        Crafty.audio.add({
+            overworld: [
+                "audio/overworld.mp3",
+                "audio/overworld.ogg",
+            ],
+            credits: [
+                "audio/credits.mp3",
+                "audio/credits.ogg"
+            ]
+        });
+
 
         Crafty.scene("Main");
     });
@@ -118,6 +130,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
+
+        Crafty.audio.play("overworld", -1);
     });
     
     Crafty.scene("Load");

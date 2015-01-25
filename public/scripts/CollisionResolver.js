@@ -27,6 +27,8 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
                 this.fourway(0);
                 if (window.level == window.lastLevel) {
                     dialog.credits = true;
+                    Crafty.audio.stop();
+                    Crafty.audio.play("credits", -1);
                     dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
                 } else {
                     dialog.playDialog(0, 300, 15, "square");
