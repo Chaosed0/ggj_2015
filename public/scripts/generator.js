@@ -204,11 +204,15 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 	        console.log(radius);
 	        console.log(center);
 
+            this.trigger("PreIsland", {radius: radius, center: center});
+
 	        this.generateLand(radius, center);
 
 	        this.generateRivers(radius, center, 1);
 	        
 	        this.generateTrees(radius, center, this.treeDensity);
+
+            this.trigger("PostIsland");
 
 	        this.generateRaces(5);
 	        this.generateNPCs(radius, center);
@@ -242,6 +246,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     	},
 
     	generateNPCs: function(radius, center) {
+            var pathing = false;
     		for (var i = 0; i < this.races.length; i++) {
     			var race = this.races[i];
     			for (var j = 0; j < race.population; j++) {
@@ -263,8 +268,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		                }
 		            }
 
-
-    				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid")
+    				var guy = Crafty.e("2D, Canvas, Text, Collision, Solid")
 			            .attr({ 
 			                x: x, 
 			                y: y, 
@@ -276,11 +280,16 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            .text(race.character)
 			            .textFont({size: w + "px"})
 			            .collision()
-			            .collisionresolver('Solid')
-			            .stayon("Ground")
 			            .bind("HitPlayer", function(data) {
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
+
+                    if(!pathing && this.pathfinder) {
+                        pathing = true;
+                        guy.addComponent(this.pathfinder, "Pathing")
+                            .pathing(this.pathfinder, "Player");
+                        guy.startPathing();
+                    }
     			}
     		}
     	}

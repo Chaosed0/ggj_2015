@@ -33,25 +33,12 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                                     
         console.log("MAIN");
 
-        var g = Crafty.e("Generator");//.configure({width: 1000, height: 1000, treeDensity:.05});
-        var island = g.generateIsland(); 
-        var radius = island[0];
-        var center = island[1];
-        var tilesize = g.tilesize;
-
-        var pathfinder = new Pathfinder();
-        pathfinder.buildmap();
-
         //Player
         var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
             .attr({ 
-                x: center[0] + radius/2, 
-                y: center[1] + radius/2, 
                 z: 10, w: 8, h: 8 
             })
             .text("☺")
-            .textFont({size: tilesize + "px"})
-            .fourway(tilesize/4)
             .collision()
             .collisionresolver('Solid')
             .stayon("Ground")
@@ -60,6 +47,23 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                 Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
                 Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
             });
+
+        var g = Crafty.e("Generator").configure({width: 1000, height: 1000, treeDensity:.05})
+            .bind("PreIsland", function(data) {
+                player.attr({
+                        x: data.center[0] + data.radius/2, 
+                        y: data.center[1] + data.radius/2, 
+                    })
+                    .textFont({size: this.tilesize + "px"})
+                    .fourway(this.tilesize/4);
+            })
+            .bind("PostIsland", function() {
+                var pathfinder = new Pathfinder();
+                pathfinder.buildmap();
+                this.pathfinder = pathfinder;
+            });
+
+        var island = g.generateIsland(); 
 
         Crafty.viewport.x = - (player.x - width/2.0/scale + player.w);
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);

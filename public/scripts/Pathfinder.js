@@ -1,5 +1,5 @@
 
-define(['crafty', './Util'], function(Crafty, Util) {
+define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQueue) {
     var gridsize = 20;
     var groundComponent = "Ground";
     var solidComponent = "Solid";
@@ -122,19 +122,29 @@ define(['crafty', './Util'], function(Crafty, Util) {
             },
 
             findpath: function(start, end) {
-                var startTile = {x: (start.x - bounds.min.x) / gridsize,
-                                 y: (start.y - bounds.min.y) / gridsize};
-                var endTile = { x: (end.x - bounds.min.x) / gridsize,
-                                y: (end.y - bounds.min.y) / gridsize};
+                var startTile = {x: Math.floor((start.x - bounds.min.x) / gridsize),
+                                 y: Math.floor((start.y - bounds.min.y) / gridsize)};
+                var endTile = { x: Math.floor((end.x - bounds.min.x) / gridsize),
+                                y: Math.floor((end.y - bounds.min.y) / gridsize)};
 
                 var startTileId = getTileId(startTile);
                 var endTileId = getTileId(endTile);
 
                 if(!map[endTileId]) {
                     console.log("WARNING: endTile is no good");
+                    return [];
                 }
+
                 var closedset = new Set();
-                var openset = [startTile];
+                var openset = new Set();
+                var openqueue = new PriorityQueue({
+                    comparator: function(a, b) {
+                        return b.hval - a.hval;
+                    },
+                });
+                openqueue.queue({tile: startTile, hval: 0});
+                openset.add(getTileId(startTile));
+
                 var came_from = {};
                 var g_scores = {};
                 var h_scores = {};
@@ -142,28 +152,17 @@ define(['crafty', './Util'], function(Crafty, Util) {
                 g_scores[startTileId] = 0;
                 h_scores[startTileId] = heuristic(startTile, endTile);
 
-                while(openset.length > 0) {
-                    var bestCostIndex = 0;
-                    var bestCostTile = openset[bestCostIndex];
+                while(openqueue.length > 0) {
+                    var data = openqueue.dequeue();
+                    var bestCost = data.hval;
+                    var bestCostTile = data.tile;
                     var bestCostTileId = getTileId(bestCostTile);
-                    var bestCost = h_scores[bestCostTileId];
-                    for(var i = 1; i < openset.length; i++) {
-                        var tile = openset[i];
-                        var tileId = getTileId(openset[bestCostIndex]);
-                        var h_score = h_scores[tileId];
-                        if(h_score < bestCost) {
-                            bestCostIndex = i;
-                            bestCostTile = tile;
-                            bestCostTileId = tileId;
-                            bestCost = h_score;
-                        }
-                    }
+                    openset.delete(bestCostTileId);
 
                     if(bestCostTileId == endTileId) {
                         return reconstruct_path(came_from, endTileId);
                     }
 
-                    openset.splice(bestCostIndex, 1);
                     closedset.add(bestCostTileId);
                     var neighbors = get_neighbors(bestCostTile);
 
@@ -176,10 +175,12 @@ define(['crafty', './Util'], function(Crafty, Util) {
 
                         var tentative_g_score = g_scores[bestCostTileId] + 1;
                         if(!(neighbor in openset) || tentative_g_score < g_scores[neighbor]) {
+                            var h_score = tentative_g_score + heuristic(neighbor, endTile)
                             came_from[neighborId] = bestCostTileId;
                             g_scores[neighborId] = tentative_g_score;
-                            h_scores[neighborId] = tentative_g_score + heuristic(neighbor, endTile);
-                            openset.push(neighbor);
+                            h_scores[neighborId] = h_score;
+                            openset.add(neighborId);
+                            openqueue.queue({tile: neighbor, hval: h_score});
                         }
                     }
                 }
