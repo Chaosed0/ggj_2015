@@ -21,15 +21,12 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
 
             if (this.has("Player") && data.obj.has("Trinket") && !dialog.currentlyPlaying) {
 
-                console.log(window.level);
                 this.text("☹");
                 this.textColor("#FF0000");
                 this.fourway(0);
                 if (window.level == window.lastLevel) {
-                    dialog.credits = true;
+                    dialog.playDialog(0, 1, 200, "sawtooth");
                     Crafty.audio.stop();
-                    Crafty.audio.play("credits", -1);
-                    dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
                 } else {
                     dialog.playDialog(0, 300, 15, "square");
                     this.trigger("PlayDialog");

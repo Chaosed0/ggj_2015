@@ -3,7 +3,6 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         './CollisionResolver',
         './Polygon',
         './StayOn',
-        './SlashAttack',
         './HurtEnemy',
         './Expires',
         './Pathing',
@@ -50,7 +49,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         console.log("MAIN");
 
         //Player
-        var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision, Solid")
+        var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, Collision, Solid")
             .attr({ 
                 z: 10, w: 8, h: 8,
                 destroyWorld: false
@@ -59,7 +58,6 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
             .collision()
             .collisionresolver('Solid')
             .stayon("Ground")
-            .slashattack(Crafty.keys.SPACE, "Enemy")
             .bind("Moved", function(oldpos) {
                 Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
                 Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
@@ -75,6 +73,18 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                             if (window.level < window.lastLevel) {
                                 this.destroy();
                                 Crafty.scene("Main");
+                            } else if(!this.worlddead) {
+                                this.worlddead = true;
+                                var _this = this;
+                                setTimeout(function() {
+                                    _this.destroy();
+                                    setTimeout(function() {
+                                        console.log("aaa");
+                                        dialog.credits = true;
+                                        Crafty.audio.play("credits", -1);
+                                        dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
+                                    }, 2000);
+                                }, 2000);
                             }
                         }
                     } else if (all.length == 2) {
