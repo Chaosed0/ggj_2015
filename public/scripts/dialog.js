@@ -93,7 +93,6 @@ define(['jquery'], function($) {
             baseFreq = typeof baseFreq !== 'undefined' ? baseFreq : 100;
             baseDur = typeof baseDur !== 'undefined' ? baseDur : 25;
             var waveTypes = ["square", 'triangle', 'sine', 'sawtooth'];
-          	console.log(wave);
           	
             if (length) {
                 var freq = parseInt(baseFreq + Math.random() * 300);
@@ -101,11 +100,16 @@ define(['jquery'], function($) {
 
                 if (this.supportsAudio) {
 	                var osc = this.audioContext.createOscillator();
-	                osc.connect(this.audioContext.destination);
+	                //osc.connect(this.audioContext.destination);
 	                osc.frequency.value = freq;
 	                osc.type = typeof wave !== 'undefined' ? wave : 
 	                	waveTypes[parseInt(Math.random() * 4)];
-	                console.log(osc.type);
+
+	                var gainNode = this.audioContext.createGain();
+	                osc.connect(gainNode);
+	                gainNode.connect(this.audioContext.destination);
+	                gainNode.gain.value = .5;
+
 	                osc.start(0);
 	            }
                 this.displayDialogText(dialogText, length);
@@ -136,6 +140,7 @@ define(['jquery'], function($) {
 	try {
         var ac = AudioContext || webkitAudioContext;
         dialog.audioContext = new ac();
+        dialog.gainNode = dialog.audioContext.createGain();
         dialog.supportsAudio = true;
     } catch (e) {
         dialog.supportsAudio = false;
