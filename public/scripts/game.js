@@ -16,7 +16,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     var gameElem = document.getElementById('game');
 	var scale = 1;
     window.level = 0;
-    window.lastLevel = 2000;
+    window.lastLevel = 10000;
     window.levelInc = 2000;
 
     dialog.init(width, height);
