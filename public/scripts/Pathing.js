@@ -91,7 +91,7 @@ define(['crafty', './Pathfinder',
                             path = [dest];
                         } else {
                             path = this._pathfinder.findpath(start, dest);
-                            if(path = []) {
+                            if(path == []) {
                                 //fall back to stupid ai
                                 path = [dest];
                             }

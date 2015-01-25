@@ -108,17 +108,37 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         window.player = player;
         window.level += window.levelInc;
 
+        var center, radius;
+
         var g = Crafty.e("Generator").configure({width: window.level, height: window.level, treeDensity:.05})
             .bind("PreIsland", function(data) {
-                player.attr({
-                        x: data.center[0] + data.radius/2, 
-                        y: data.center[1] + data.radius/2, 
-                    })
-                    .textFont({size: this.tilesize + "px"})
-                    .fourway(this.tilesize/4);
+                center = data.center;
+                radius = data.radius;
             })
             .bind("PostIsland", function() {
                 var pathfinder = new Pathfinder();
+                var w = 20;
+                var h = 20;
+                var x,y;
+	            while (true) {
+	                x = (center[0] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+	                y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+
+	                // Make sure the tree is on ground
+	                var t1 = Crafty.map.search({_x: x,   _y: y+h-4, _w: 1, _h: 4}, true);
+	                var t2 = Crafty.map.search({_x: x+w, _y: y+h-4, _w: 1, _h: 4}, true);
+	                if (t1.length > 0 && t2.length > 0) {
+	                    // Make sure it's not on water/bridge/trees
+	                    if (!util.searchContains([t1,t2], ['River', 'Bridge', 'Tree'])) {
+	                        break;
+	                    }
+	                }
+	            }
+
+                player.attr({ x: x, y: y, })
+                    .textFont({size: this.tilesize + "px"})
+                    .fourway(this.tilesize/4);
+
                 pathfinder.buildmap();
                 this.pathfinder = pathfinder;
             });
