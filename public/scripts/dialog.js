@@ -9,6 +9,10 @@ define(['jquery'], function($) {
 			height = h;
 		},
 
+        setEntity: function(entity) {
+            this._entity = entity;
+        },
+
 		generateCharacter: function() {
             return unescape("%u" + (9472 + parseInt(Math.random() * 300)).toString(16));
         },
@@ -126,6 +130,10 @@ define(['jquery'], function($) {
             	var _this = this;
             	setTimeout(function() {
             		_this.currentlyPlaying = false;
+                    if(_this._entity) {
+                        _this._entity.trigger("StopDialog");
+                        delete _this._entity;
+                    }
 	                //this.dialogText.destroy();
 	                if (!_this.credits) {
 	                	$("#dialog").html("");

@@ -310,6 +310,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            .collision()
                         .collisionresolver("Solid")
 			            .bind("HitPlayer", function(data) {
+                            dialog.setEntity(this);
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
 

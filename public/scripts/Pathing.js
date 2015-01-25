@@ -24,6 +24,11 @@ define(['crafty', './Pathfinder',
         }
     }
 
+    var stopDialog = function() {
+        this._foundplayer= true;
+        this._forceNewPath();
+    }
+
     Crafty.c("Pathing", {
         _pathtocomp: "Player",
         _pathinterval: 1000,
@@ -36,6 +41,12 @@ define(['crafty', './Pathfinder',
         _originalpos: null,
         _homecenter: null,
         _homerange: 0,
+        _foundplayer: false,
+        _runawaywhenfound: true,
+
+        _forceNewPath: function() {
+            this._nextpathtimer = this._pathinterval;
+        },
 
         _getPath: function() {
             var ents = Crafty(this._pathtocomp);
@@ -48,19 +59,24 @@ define(['crafty', './Pathfinder',
                 }
                 var start = new Vec2d(this.x, this.y);
                 var dest = new Vec2d(ent.x, ent.y);
+                var homecenter;
                 var path = null;
                 
                 if(this._homecenter) {
                     //If destination is too far from our home, don't path
-                    var homecenter = new Vec2d(this._homecenter[0], this._homecenter[1]);
-                    if(dest.distance(homecenter) > this._homerange) {
-                        //If we're already home, don't path anywhere and stop early;
-                        // otherwise, go back home instead of at player
-                        if(this._originalpos.distance(start) < 10.0) {
-                            path = [];
-                        } else {
-                            dest = this._originalpos;
-                        }
+                    homecenter = new Vec2d(this._homecenter[0], this._homecenter[1]);
+                } else {
+                    homecenter = null;
+                }
+
+                if((this._runawaywhenfound && this._foundplayer) ||
+                        (homecenter && dest.distance(homecenter) > this._homerange)) {
+                    //If we're already home, don't path anywhere and stop early;
+                    // otherwise, go back home instead of at player
+                    if(this._originalpos.distance(start) < 10.0) {
+                        path = [];
+                    } else {
+                        dest = this._originalpos;
                     }
                 }
 
@@ -75,6 +91,10 @@ define(['crafty', './Pathfinder',
                             path = [dest];
                         } else {
                             path = this._pathfinder.findpath(start, dest);
+                            if(path = []) {
+                                //fall back to stupid ai
+                                path = [dest];
+                            }
                         }
                     }
                 }
@@ -97,6 +117,7 @@ define(['crafty', './Pathfinder',
         init: function() {
             this.bind("StartPathing", this.startPathing);
             this.bind("StopPathing", this.stopPathing);
+            this.bind("StopDialog", stopDialog);
 
             if(this._pathing) {
                 this._currentpath = this._getPath();
