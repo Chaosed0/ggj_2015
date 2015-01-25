@@ -161,7 +161,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 return true;
             },
 
-            findpath: function(start, end) {
+            findpath: function(start, end, maxsearch) {
                 var startTile = getTileForCoord(start);
                 var endTile = getTileForCoord(end);
 
@@ -186,11 +186,17 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 var came_from = {};
                 var g_scores = {};
                 var h_scores = {};
+                var searches = 0;
                 came_from[startTileId] = startTileId;
                 g_scores[startTileId] = 0;
                 h_scores[startTileId] = heuristic(startTile, endTile);
 
                 while(openqueue.length > 0) {
+                    searches++;
+                    if(searches > maxsearch) {
+                        return reconstruct_path(came_from, getTileId(openqueue.dequeue().tile));
+                    }
+
                     var data = openqueue.dequeue();
                     var bestCost = data.hval;
                     var bestCostTile = data.tile;
