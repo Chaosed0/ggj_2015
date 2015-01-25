@@ -49,6 +49,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
 		}
 		
 		console.log(randomSeed);
+		window.randomSeed = randomSeed;
 
 		Math.seedrandom(randomSeed);	
 			

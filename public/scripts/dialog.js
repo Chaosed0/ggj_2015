@@ -138,7 +138,8 @@ define(['jquery'], function($) {
 	                if (!_this.credits) {
 	                	$("#dialog").html("");
 	                } else {
-	                	$("#dialog").html("Made by <a href='http://straypixels.net/' target='_blank'>Ed Lu</a> and <a href='http://jeremyneiman.com' target='_blank'>Jeremy Neiman</a> ");
+						var shareLink = window.location.protocol + "//" + window.location.host + window.location.pathname + "?seed=" + window.randomSeed;
+	                	$("#dialog").html("Made by <a href='http://straypixels.net/' target='_blank'>Ed Lu</a> and <a href='http://jeremyneiman.com' target='_blank'>Jeremy Neiman</a><br/><br/>Share your adventure: <a href='"+shareLink+"'>"+shareLink+"</a>");
 	                }
             	}, 500);
             }
