@@ -1,5 +1,5 @@
 
-define(['crafty'], function(Crafty) {
+define(['crafty', './dialog'], function(Crafty, dialog) {
 
     var moved = function() {
         var collisions = this.hit(this._anti);
@@ -11,11 +11,18 @@ define(['crafty'], function(Crafty) {
 
             this.x -= data.normal.x * data.overlap;
             this.y -= data.normal.y * data.overlap;
+
             this.trigger("Hit", data);
             if (this.has("Player")) {
                 data.obj.trigger("HitPlayer", data);
             } else if (data.obj.has("Player")) {
                 this.trigger("HitPlayer", data);
+            }
+
+            if (this.has("Player") && data.obj.has("Trinket")) {
+                this.fourway(0);
+                dialog.playDialog(0, 200, 30);
+                this.destroyWorld = true;
             }
         }
     };

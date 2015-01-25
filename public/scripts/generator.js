@@ -187,7 +187,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 
 	            var boundBox = util.getBoundBox(treePolygon);
 	            var tree = Crafty.e("2D, Canvas, Polygon, Collision, Solid, Tree")
-	                .attr({z: 11, x: x, y: y, w:w, h:h-this.tilesize/2})
+	                .attr({z: 11, x: x, y: y, w:w, h:h})
 	                .polygon(treePolygon, treeColor)
 	                .collision(trunkPolygon);
 	        }

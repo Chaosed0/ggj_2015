@@ -37,7 +37,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         //Player
         var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision, Solid")
             .attr({ 
-                z: 10, w: 8, h: 8 
+                z: 10, w: 8, h: 8,
+                destroyWorld: false
             })
             .text("☺")
             .collision()
@@ -47,9 +48,44 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
             .bind("Moved", function(oldpos) {
                 Crafty.viewport.x = - (this.x - width/2.0/scale + this.w);
                 Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
+            })
+            .bind("EnterFrame", function(e) {
+                if (this.destroyWorld) {
+                    //console.log("Frame");
+                    var all = Crafty("obj");
+                    var e;
+                    if (all.length == 1){
+                        if (!dialog.currentlyPlaying)
+                        {
+                            this.destroy();
+                            Crafty.scene("Main");
+                        }
+                    } else if (all.length == 2) {
+                        if (!dialog.currentlyPlaying)
+                        {
+                            for (var i = 0; i < all.length; i++) {
+                                e = all.get(i);
+                                if (e.has("Trinket")) {
+                                    e.destroy();
+                                    return;
+                                }
+                            }
+                        }
+                    } else {
+                        for (var i = 0; i < all.length; i++) {
+                            e = all.get(i);
+                            if (!e.has("Trinket") && !e.has("Player")) {
+                                e.destroy();
+                                return;
+                            }
+                        }
+                    }
+                }
             });
 
-        var g = Crafty.e("Generator").configure({width: 2000, height: 2000, treeDensity:.05})
+        window.player = player;
+
+        var g = Crafty.e("Generator").configure({width: 10000, height: 10000, treeDensity:.05})
             .bind("PreIsland", function(data) {
                 player.attr({
                         x: data.center[0] + data.radius/2, 

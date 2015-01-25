@@ -191,8 +191,12 @@ define(function() {
                 overlap: MTV2,
                 normal: MN
             };
+        },
+
+        randomColor: function() {
+            return "#" + parseInt(Math.pow(2, 24) * Math.random()).toString(16);
         }
-    };
+    }
 
     
 
