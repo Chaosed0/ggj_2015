@@ -1,11 +1,12 @@
 
-define(['crafty', 'jquery', './Util', './astar',
+define(['crafty', 'jquery', './Util', './Pathfinder',
         './CollisionResolver',
         './Polygon',
         './StayOn',
         './SlashAttack',
         './HurtEnemy',
         './Expires',
+        './Pathing',
         './generator'
     ], function(Crafty, $, util, Pathfinder) {
     var self = this;
@@ -36,8 +37,11 @@ define(['crafty', 'jquery', './Util', './astar',
         var center = island[1];
         var tilesize = g.tilesize;
 
+        var pathfinder = new Pathfinder();
+        pathfinder.buildmap();
+
         //Player
-        var player = Crafty.e("2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
+        var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
             .attr({ 
                 x: center[0] + radius/2, 
                 y: center[1] + radius/2, 
@@ -60,8 +64,6 @@ define(['crafty', 'jquery', './Util', './astar',
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
 
-        var pathfinder = new Pathfinder();
-        pathfinder.buildmap();
         //console.log(util.generateDialog());
         //util.playDialog();
         //pathfinder.render();
