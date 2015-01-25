@@ -30,7 +30,7 @@ define(['crafty', 'jquery', './Util', './astar',
                                     
         console.log("MAIN");
 
-        var g = Crafty.e("Generator").configure({width: 1000, height: 1000, treeDensity:.05});
+        var g = Crafty.e("Generator");//.configure({width: 1000, height: 1000, treeDensity:.05});
         var island = g.generateIsland(); 
         var radius = island[0];
         var center = island[1];
@@ -62,7 +62,9 @@ define(['crafty', 'jquery', './Util', './astar',
 
         var pathfinder = new Pathfinder();
         pathfinder.buildmap();
-        pathfinder.render();
+        //console.log(util.generateDialog());
+        util.playDialog();
+        //pathfinder.render();
     });
     
     Crafty.scene("Load");

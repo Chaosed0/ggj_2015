@@ -1,6 +1,10 @@
 
 define(function() {
     var exports = {
+        supportsAudio: null,
+        audioContext: null,
+        
+
         getRandom: function(min, max) {
             if(arguments.length > 1) {
                 return Math.random() * (max - min) + min;
@@ -46,7 +50,56 @@ define(function() {
                 }
             }
             return false;
+        },
+
+        generateCharacter: function() {
+            return unescape("%u" + (9472 + parseInt(Math.random() * 300)).toString(16));
+        },
+
+        generateDialog: function(length) {
+            length = typeof length !== 'undefined' ? length : 20;
+
+            var s = this.generateCharacter();
+
+            while (s.length < length) {
+                if (Math.random() < .3) {
+                    s += " ";
+                } else {
+                    s += this.generateCharacter();
+                }
+            }
+
+            return s;
+        },
+
+        playDialog: function(length) {
+            length = typeof length !== 'undefined' ? length : 5;
+            if (this.supportsAudio && length) {
+                var freq = parseInt(100 + Math.random() * 1000);
+                var duration = parseInt(5 + Math.random() * 10);
+
+                var osc = this.audioContext.createOscillator();
+                osc.connect(this.audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = ["square", 'triangle', 'sine', 'sawtooth'][Math.floor(Math.random() *4)];
+                osc.start(0);
+
+                var _this = this;
+                setTimeout(function() {
+                    console.log(duration);
+                    osc.stop(0);
+                    _this.playDialog(length-1);
+                }, duration);
+            }
         }
+    };
+
+    try {
+        new webkitAudioContext();
+        exports.supportsAudio = true;
+        exports.audioContext = new webkitAudioContext();
+    } catch (e) {
+        exports.supportsAudio = false;
     }
 
     return exports;
