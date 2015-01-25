@@ -15,6 +15,9 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     var height = $(document).height();
     var gameElem = document.getElementById('game');
 	var scale = 1;
+    window.level = 0;
+    window.lastLevel = 10000;
+    window.levelInc = 2000;
 
     dialog.init(width, height);
 
@@ -57,8 +60,10 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                     if (all.length == 1){
                         if (!dialog.currentlyPlaying)
                         {
-                            this.destroy();
-                            Crafty.scene("Main");
+                            if (window.level < window.lastLevel) {
+                                this.destroy();
+                                Crafty.scene("Main");
+                            }
                         }
                     } else if (all.length == 2) {
                         if (!dialog.currentlyPlaying)
@@ -72,7 +77,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                             }
                         }
                     } else {
-                        for (var i = 0; i < all.length; i++) {
+                        for (var i = all.length - 1; i >= 0; i--) {
                             e = all.get(i);
                             if (!e.has("Trinket") && !e.has("Player")) {
                                 e.destroy();
@@ -84,8 +89,9 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
             });
 
         window.player = player;
+        window.level += window.levelInc;
 
-        var g = Crafty.e("Generator").configure({width: 6000, height: 6000, treeDensity:.05})
+        var g = Crafty.e("Generator").configure({width: window.level, height: window.level, treeDensity:.05})
             .bind("PreIsland", function(data) {
                 player.attr({
                         x: data.center[0] + data.radius/2, 
@@ -100,7 +106,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                 this.pathfinder = pathfinder;
             });
 
-        var island = g.generateIsland(); 
+        
+        var island = g.generateIsland(window.level, window.level); 
 
         Crafty.viewport.x = - (player.x - width/2.0/scale + player.w);
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);

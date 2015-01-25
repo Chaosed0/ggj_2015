@@ -2,6 +2,8 @@ define(['jquery'], function($) {
 	var width, height;
 
 	var dialog = {
+		credits: false,
+
 		init: function(w, h) {
 			width = w;
 			height = h;
@@ -18,18 +20,18 @@ define(['jquery'], function($) {
         	var dx = p.x - t.x;
         	var dy = p.y - t.y;
 
-        	if (dx > 100 || dy > 100) {
+        	if (Math.abs(dx) > 100 || Math.abs(dy) > 100) {
         		var f;
 
         		//Horizontal
-        		if (Math.abs(dx) > Math.abs(dy)) {
-        			if (dx > 0) {
+        		if (Math.abs(dx) >= Math.abs(dy)) {
+        			if (dx >= 0) {
         				f = "☜";
         			} else {
         				f = "☞";
         			}
         		} else { //Vertical
-        			if (dy < 0) {
+        			if (dy <= 0) {
         				f = "☟";
         			} else {
         				f = "☝";
@@ -117,7 +119,11 @@ define(['jquery'], function($) {
             	setTimeout(function() {
             		_this.currentlyPlaying = false;
 	                //this.dialogText.destroy();
-	                $("#dialog").html("");
+	                if (!_this.credits) {
+	                	$("#dialog").html("");
+	                } else {
+	                	$("#dialog").html("Made by <a href='http://straypixels.net/' target='_blank'>Ed Lu</a> and <a href='http://jeremyneiman.com' target='_blank'>Jeremy Neiman</a> ");
+	                }
             	}, 500);
             }
         }

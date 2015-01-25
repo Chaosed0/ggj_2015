@@ -19,11 +19,18 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
                 this.trigger("HitPlayer", data);
             }
 
-            if (this.has("Player") && data.obj.has("Trinket")) {
+            if (this.has("Player") && data.obj.has("Trinket") && !dialog.currentlyPlaying) {
+
+                console.log(window.level);
                 this.text("☹");
                 this.textColor("#FF0000");
                 this.fourway(0);
-                dialog.playDialog(0, 250, 30);
+                if (window.level == window.lastLevel) {
+                    dialog.credits = true;
+                    dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
+                } else {
+                    dialog.playDialog(0, 250, 30);
+                }
                 this.destroyWorld = true;
             }
         }
