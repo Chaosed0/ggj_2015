@@ -7,7 +7,7 @@
   ],
   "description": "Ludum Dare 31",
   "main": "scripts/main.js",
-  "license": "MIT",
+  "license": "CC BY-NC-SA 4.0",
   "private": true,
   "ignore": [
     "**/.*",
