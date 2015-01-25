@@ -52,49 +52,6 @@ define(function() {
             return false;
         },
 
-        generateCharacter: function() {
-            return unescape("%u" + (9472 + parseInt(Math.random() * 300)).toString(16));
-        },
-
-        generateDialog: function(length) {
-            length = typeof length !== 'undefined' ? length : 20;
-
-            var s = this.generateCharacter();
-
-            while (s.length < length) {
-                if (Math.random() < .3) {
-                    s += " ";
-                } else {
-                    s += this.generateCharacter();
-                }
-            }
-
-            return s;
-        },
-
-        playDialog: function(baseFreq, baseDur, length) {
-            length = typeof length !== 'undefined' ? length : 20;
-            baseFreq = typeof baseFreq !== 'undefined' ? baseFreq : 100;
-            baseDur = typeof baseDur !== 'undefined' ? baseDur : 25;
-
-            if (this.supportsAudio && length) {
-                var freq = parseInt(baseFreq + Math.random() * 300);
-                var duration = parseInt(baseDur + Math.random() * 50);
-
-                var osc = this.audioContext.createOscillator();
-                osc.connect(this.audioContext.destination);
-                osc.frequency.value = freq;
-                osc.type = ["square", 'triangle', 'sine', 'sawtooth'][Math.floor(Math.random() *4)];
-                osc.start(0);
-
-                var _this = this;
-                setTimeout(function() {
-                    console.log(duration);
-                    osc.stop(0);
-                    _this.playDialog(baseFreq, baseDur, length-1);
-                }, duration);
-            }
-        },
 
         SAT: function(poly1, poly2) {
             var points1 = poly1.points,
@@ -237,13 +194,7 @@ define(function() {
         }
     };
 
-    try {
-        new webkitAudioContext();
-        exports.supportsAudio = true;
-        exports.audioContext = new webkitAudioContext();
-    } catch (e) {
-        exports.supportsAudio = false;
-    }
+    
 
     return exports;
 });

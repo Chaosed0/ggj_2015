@@ -1,5 +1,5 @@
 
-define(['crafty', 'jquery', './Util', './Pathfinder',
+define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         './CollisionResolver',
         './Polygon',
         './StayOn',
@@ -8,13 +8,15 @@ define(['crafty', 'jquery', './Util', './Pathfinder',
         './Expires',
         './Pathing',
         './generator'
-    ], function(Crafty, $, util, Pathfinder) {
+    ], function(Crafty, $, util, Pathfinder, dialog) {
     var self = this;
     var map;   
     var width = $(document).width();
     var height = $(document).height();
     var gameElem = document.getElementById('game');
 	var scale = 1.0;
+
+    dialog.init(width, height);
 
     Crafty.init(width, height, gameElem);                        
 

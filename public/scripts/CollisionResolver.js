@@ -12,6 +12,7 @@ define(['crafty'], function(Crafty) {
             this.x -= data.normal.x * data.overlap;
             this.y -= data.normal.y * data.overlap;
             this.trigger("Hit", data);
+            data.obj.trigger("HitPlayer", data);
         }
     };
 

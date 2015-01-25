@@ -1,4 +1,4 @@
-define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
+define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Crafty, util, dialog) {
     Crafty.c("Generator", {
 
     	waterColor: '#000055',
@@ -229,9 +229,13 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
     			race.character = this.generateRaceCharacter();
     			race.friendlyness = parseInt(Math.random() * 100);
     			race.aggressiveness = parseInt(Math.random() * 100);
-    			race.baseFreq = parseInt(Math.random() * 1000);
-    			race.baseDur = 100 - parseInt(race.baseFreq/10);
     			race.averageSize = this.tilesize/2 + parseInt(Math.random()*this.tilesize*2);
+    			//console.log(race.averageSize);
+    			race.baseFreq = 1200 - race.averageSize * 16 + parseInt(Math.random() * 100);
+    			//console.log(race.baseFreq);
+    			race.baseDur = 120 - parseInt(race.baseFreq/10);
+    			console.log(race.averageSize, race.baseFreq, race.baseDur);
+    			
     			race.population = parseInt(1000/race.averageSize);
     			this.races.push(race);
     		}
@@ -259,18 +263,24 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
 		                }
 		            }
 
+
     				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid")
 			            .attr({ 
 			                x: x, 
 			                y: y, 
 			                w: w, h: h,
-			                z: 10
+			                z: 10,
+			                baseFreq: race.baseFreq,
+			                baseDur: race.baseDur
 			            })
 			            .text(race.character)
 			            .textFont({size: w + "px"})
 			            .collision()
 			            .collisionresolver('Solid')
-			            .stayon("Ground");
+			            .stayon("Ground")
+			            .bind("HitPlayer", function(data) {
+			            	dialog.playDialog(this.baseFreq, this.baseDur);
+			            });
     			}
     		}
     	}
