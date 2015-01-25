@@ -310,9 +310,11 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
 
-                    if(false && this.pathfinder) {
+                    if(this.pathfinder) {
                         guy.addComponent(this.pathfinder, "Pathing")
-                            .pathing(this.pathfinder, "Player");
+                            .pathing(this.pathfinder, "Player")
+                            .homecenter(race.homeCenter)
+                            .homerange(race.range);
                         guy.startPathing();
                     }
     			}

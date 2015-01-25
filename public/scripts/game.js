@@ -106,10 +106,6 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
-
-        //console.log(util.generateDialog());
-        //util.playDialog();
-        //pathfinder.render();
     });
     
     Crafty.scene("Load");
