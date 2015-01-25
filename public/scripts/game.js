@@ -43,7 +43,7 @@ define(['crafty', 'jquery', './Util', './astar',
                 y: center[1] + radius/2, 
                 z: 10, w: 8, h: 8 
             })
-            .text("ಠ")
+            .text("☺")
             .textFont({size: tilesize + "px"})
             .fourway(tilesize/4)
             .collision()
