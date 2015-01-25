@@ -70,10 +70,10 @@ define(['crafty', './Util'], function(Crafty, Util) {
                 bounds = {};
                 bounds.min = {};
                 bounds.max = {};
-                bounds.min.x = Math.floor(actualbounds.min.x / 20) * 20;
-                bounds.min.y = Math.floor(actualbounds.min.y / 20) * 20;
-                bounds.max.x = Math.floor(actualbounds.max.x / 20) * 20;
-                bounds.max.y = Math.floor(actualbounds.max.y / 20) * 20;
+                bounds.min.x = Math.floor(actualbounds.min.x / gridsize) * gridsize;
+                bounds.min.y = Math.floor(actualbounds.min.y / gridsize) * gridsize;
+                bounds.max.x = Math.ceil(actualbounds.max.x / gridsize) * gridsize;
+                bounds.max.y = Math.ceil(actualbounds.max.y / gridsize) * gridsize;
                 width = (bounds.max.x - bounds.min.x) / gridsize;
                 height = (bounds.max.y - bounds.min.y) / gridsize;
 
