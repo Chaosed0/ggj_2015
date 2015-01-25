@@ -29,7 +29,7 @@ define(['crafty', './Util'], function(Crafty, Util) {
             while(current != came_from[current]) {
                 var prior = came_from[current];
                 var priorTile = getTileFromId(prior);
-                path.push({x: priorTile.x * gridsize, y: priorTile.y * gridsize});
+                path.push({x: (priorTile.x + 0.5) * gridsize, y: (priorTile.y + 0.5) * gridsize});
                 var current = prior;
             }
             return path;
@@ -86,22 +86,21 @@ define(['crafty', './Util'], function(Crafty, Util) {
                         for(var i = 0; i < ents.length; i++) {
                             var collidingEntity = ents[i];
 
-                            if(collidingEntity.has(groundComponent)) {
-                                passable = true;
-                            } else if(collidingEntity.has(solidComponent)) {
+                            //Map.search searches by minimum bounding box,
+                            // we need to search by collision bounding box
+                            var colliding = true;
+                            if(collidingEntity.map) {
+                                var poly = new Crafty.polygon([[x, y],
+                                    [x + gridsize, y],
+                                    [x + gridsize, y + gridsize],
+                                    [x, y + gridsize]]);
+                                colliding = Util.SAT(collidingEntity.map, poly);
+                            }
 
-                                //Map.search searches by minimum bounding box,
-                                // we need to search by collision bounding box
-                                var colliding = true;
-                                if(collidingEntity.map) {
-                                    var poly = new Crafty.polygon([[x, y],
-                                        [x + gridsize, y],
-                                        [x + gridsize, y + gridsize],
-                                        [x, y + gridsize]]);
-                                    colliding = Util.SAT(collidingEntity.map, poly);
-                                }
-
-                                if(colliding) {
+                            if(colliding) {
+                                if(collidingEntity.has(groundComponent)) {
+                                    passable = true;
+                                } else if(collidingEntity.has(solidComponent)) {
                                     passable = false;
                                     break;
                                 }
@@ -116,7 +115,7 @@ define(['crafty', './Util'], function(Crafty, Util) {
                 for(var y = 0; y < height; y++) {
                     for(var x = 0; x < width; x++) {
                         Crafty.e("2D, Canvas, Color")
-                            .attr({x: x * gridsize + bounds.min.x, y: y * gridsize + bounds.min.y, w:2, h:2})
+                            .attr({x: x * gridsize + bounds.min.x, y: y * gridsize + bounds.min.y, w:2, h:2, z:1000})
                             .color(map[y * width + x] ? "#00FF00" : "#FF0000");
                     }
                 }
