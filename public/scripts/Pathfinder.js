@@ -70,6 +70,11 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
             return neighbors;
         }
 
+        var getTileForCoord = function(coord) {
+            return {x: Math.floor((coord.x - bounds.min.x) / gridsize),
+                    y: Math.floor((coord.y - bounds.min.y) / gridsize)};
+        }
+
         return {
             buildmap: function() {
                 var actualbounds = Crafty.map.boundaries();
@@ -127,11 +132,38 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 }
             },
 
+            //Returns true if you can should be able to go start to end directly, false otherwise
+            checklos: function(start, end) {
+                var startTile = getTileForCoord(start);
+                var endTile = getTileForCoord(end);
+                var deltax = endTile.x - startTile.x
+                var deltay = endTile.y - startTile.y
+                var error = 0
+                var deltaerr = Math.abs (deltay / deltax)
+                var x = startTile.x
+                var y = startTile.y
+                while (x != endTile.x) {
+                    if(map[getTileId({x:x, y:y})] == false) {
+                        //Short-circuit
+                        return false;
+                    }
+                    error = error + deltaerr
+                    while (error >= 0.5) {
+                        if(map[getTileId({x:x, y:y})] == false) {
+                            //Short-circuit
+                            return false;
+                        }
+                        y = y + Math.sign(deltay);
+                        error = error - 1.0;
+                    }
+                    x = x + Math.sign(deltax);
+                }
+                return true;
+            },
+
             findpath: function(start, end) {
-                var startTile = {x: Math.floor((start.x - bounds.min.x) / gridsize),
-                                 y: Math.floor((start.y - bounds.min.y) / gridsize)};
-                var endTile = { x: Math.floor((end.x - bounds.min.x) / gridsize),
-                                y: Math.floor((end.y - bounds.min.y) / gridsize)};
+                var startTile = getTileForCoord(start);
+                var endTile = getTileForCoord(end);
 
                 var startTileId = getTileId(startTile);
                 var endTileId = getTileId(endTile);
