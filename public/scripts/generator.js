@@ -286,7 +286,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		            }
 
 
-    				var guy = Crafty.e("2D, Canvas, Text, Collision, Solid, NPC")
+    				var guy = Crafty.e("2D, Canvas, Text, Collision, Solid, NPC, CollisionResolver")
 			            .attr({ 
 			                x: x, 
 			                y: y, 
@@ -298,12 +298,13 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            .text(race.character)
 			            .textFont({size: w + "px"})
 			            .collision()
+                        .collisionresolver("Solid")
 			            .bind("HitPlayer", function(data) {
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
 
-                    if(!pathing && this.pathfinder) {
-                        pathing = true;
+                    if(this.pathfinder) {
+                        //pathing = true;
                         guy.addComponent(this.pathfinder, "Pathing")
                             .pathing(this.pathfinder, "Player");
                         guy.startPathing();

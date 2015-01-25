@@ -4,7 +4,7 @@ define(['crafty', './Pathfinder',
     var Vec2d = Crafty.math.Vector2D;
 
     var enterFrame = function(data) {
-        //this._nextpathtimer += data.dt;
+        this._nextpathtimer += data.dt;
         if(this._nextpathtimer >= this._pathinterval) {
             this._nextpathtimer -= this._pathinterval;
 
@@ -47,12 +47,12 @@ define(['crafty', './Pathfinder',
                 var dest = {x: ent.x, y: ent.y};
                 var path = this._pathfinder.findpath(start, dest);
 
-                for(var i = 0; i < path.length; i++) {
+                /*for(var i = 0; i < path.length; i++) {
                     var pathnode = path[i];
                     Crafty.e("2D, Canvas, Color")
                         .attr({x: pathnode.x, y: pathnode.y, z: 10000, w: 4, h: 4})
                         .color("#0000FF");
-                }
+                }*/
 
                 return path;
             } else {

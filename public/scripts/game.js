@@ -35,7 +35,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         console.log("MAIN");
 
         //Player
-        var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision")
+        var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision, Solid")
             .attr({ 
                 z: 10, w: 8, h: 8 
             })
@@ -49,7 +49,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                 Crafty.viewport.y = - (this.y - height/2.0/scale + this.h);
             });
 
-        var g = Crafty.e("Generator").configure({width: 1000, height: 1000, treeDensity:.05})
+        var g = Crafty.e("Generator").configure({width: 2000, height: 2000, treeDensity:.05})
             .bind("PreIsland", function(data) {
                 player.attr({
                         x: data.center[0] + data.radius/2, 

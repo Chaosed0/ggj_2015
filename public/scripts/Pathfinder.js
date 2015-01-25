@@ -1,6 +1,6 @@
 
 define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQueue) {
-    var gridsize = 20;
+    var gridsize = 32;
     var groundComponent = "Ground";
     var solidComponent = "Solid";
 
@@ -25,11 +25,17 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
         var reconstruct_path = function(came_from, endTileId) {
             var current = endTileId;
             var currentTile = getTileFromId(endTileId);
-            var path = [{x: (currentTile.x + 0.5) * gridsize, y: (currentTile.y + 0.5) * gridsize}];
+            var path = [{
+                x: (currentTile.x + 0.5) * gridsize + bounds.min.x, 
+                y: (currentTile.y + 0.5) * gridsize + bounds.min.y
+            }];
             while(current != came_from[current]) {
                 var prior = came_from[current];
                 var priorTile = getTileFromId(prior);
-                path.push({x: (priorTile.x + 0.5) * gridsize, y: (priorTile.y + 0.5) * gridsize});
+                path.push({
+                    x: (priorTile.x + 0.5) * gridsize + bounds.min.x, 
+                    y: (priorTile.y + 0.5) * gridsize + bounds.min.y}
+                );
                 var current = prior;
             }
             return path;
@@ -139,7 +145,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 var openset = new Set();
                 var openqueue = new PriorityQueue({
                     comparator: function(a, b) {
-                        return a.hval - b.hval;
+                        return a.hval - b.hval; //TODO 
                     },
                 });
                 openqueue.queue({tile: startTile, hval: 0});
@@ -174,7 +180,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                         }
 
                         var tentative_g_score = g_scores[bestCostTileId] + 1;
-                        if(!(neighbor in openset) || tentative_g_score < g_scores[neighbor]) {
+                        if(!(openset.has(neighborId)) || tentative_g_score < g_scores[neighbor]) {
                             var h_score = tentative_g_score + heuristic(neighbor, endTile)
                             came_from[neighborId] = bestCostTileId;
                             g_scores[neighborId] = tentative_g_score;
