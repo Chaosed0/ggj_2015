@@ -25,7 +25,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
         var reconstruct_path = function(came_from, endTileId) {
             var current = endTileId;
             var currentTile = getTileFromId(endTileId);
-            var path = [{x: currentTile.x * gridsize, y: currentTile.y * gridsize}];
+            var path = [{x: (currentTile.x + 0.5) * gridsize, y: (currentTile.y + 0.5) * gridsize}];
             while(current != came_from[current]) {
                 var prior = came_from[current];
                 var priorTile = getTileFromId(prior);
@@ -139,7 +139,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 var openset = new Set();
                 var openqueue = new PriorityQueue({
                     comparator: function(a, b) {
-                        return b.hval - a.hval;
+                        return a.hval - b.hval;
                     },
                 });
                 openqueue.queue({tile: startTile, hval: 0});
