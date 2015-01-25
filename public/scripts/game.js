@@ -77,11 +77,16 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                             }
                         }
                     } else {
+                        var speed = window.level/window.levelInc;
+                        var count = 0;
                         for (var i = all.length - 1; i >= 0; i--) {
                             e = all.get(i);
                             if (!e.has("Trinket") && !e.has("Player")) {
                                 e.destroy();
-                                return;
+                                count += 1;
+                                if (count >= speed) {
+                                    return;
+                                }
                             }
                         }
                     }

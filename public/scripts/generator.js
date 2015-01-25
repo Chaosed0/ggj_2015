@@ -223,11 +223,13 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 
             this.trigger("PostIsland");
 
+            this.generateTrinket(radius, center);
+
 	        var numberRaces = this.pickNumberRaces(radius);
 	        this.generateRaces(radius, center, numberRaces);
 	        this.generateNPCs(radius, center);
 
-            this.generateTrinket(radius, center);
+            
 
 	        return [radius, center];
 
@@ -284,7 +286,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
 		                if (t1.length > 0) {
 		                    // Make sure it's not on water/bridge/trees
-		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player'])) {
+		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player', 'Trinket'])) {
 		                        break;
 		                    }
 		                }

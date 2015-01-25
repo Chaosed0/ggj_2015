@@ -29,7 +29,7 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
                     dialog.credits = true;
                     dialog._playDialog("Made by Ed Lu and Jeremy Neiman ", 0, 300, 32);
                 } else {
-                    dialog.playDialog(0, 250, 30);
+                    dialog.playDialog(0, 300, 15, "square");
                 }
                 this.destroyWorld = true;
             }

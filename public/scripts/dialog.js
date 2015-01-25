@@ -80,19 +80,21 @@ define(['jquery'], function($) {
         },
 
         currentlyPlaying: false,
-        playDialog: function(baseFreq, baseDur, length) {
+        playDialog: function(baseFreq, baseDur, length, wave) {
             if (!this.currentlyPlaying) {
                 this.currentlyPlaying = true;
                 var dialogText = this.generateDialog(length);
-                this._playDialog(dialogText, baseFreq, baseDur, length);
+                this._playDialog(dialogText, baseFreq, baseDur, length, wave);
             }
         },
 
-        _playDialog: function(dialogText, baseFreq, baseDur, length) {
+        _playDialog: function(dialogText, baseFreq, baseDur, length, wave) {
             length = typeof length !== 'undefined' ? length : 20;
             baseFreq = typeof baseFreq !== 'undefined' ? baseFreq : 100;
             baseDur = typeof baseDur !== 'undefined' ? baseDur : 25;
-
+            var waveTypes = ["square", 'triangle', 'sine', 'sawtooth'];
+          	console.log(wave);
+          	
             if (length) {
                 var freq = parseInt(baseFreq + Math.random() * 300);
                 var duration = parseInt(baseDur + Math.random() * 50);
@@ -101,7 +103,9 @@ define(['jquery'], function($) {
 	                var osc = this.audioContext.createOscillator();
 	                osc.connect(this.audioContext.destination);
 	                osc.frequency.value = freq;
-	                osc.type = ["square", 'triangle', 'sine', 'sawtooth'][Math.floor(Math.random() *4)];
+	                osc.type = typeof wave !== 'undefined' ? wave : 
+	                	waveTypes[parseInt(Math.random() * 4)];
+	                console.log(osc.type);
 	                osc.start(0);
 	            }
                 this.displayDialogText(dialogText, length);
@@ -111,7 +115,7 @@ define(['jquery'], function($) {
                 	if (_this.supportsAudio) {
                     	osc.stop(0);
                     }
-                    _this._playDialog(dialogText, baseFreq, baseDur, length-1);
+                    _this._playDialog(dialogText, baseFreq, baseDur, length-1, wave);
 
                 }, duration);
             } else {
