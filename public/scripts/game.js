@@ -85,7 +85,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
 
         window.player = player;
 
-        var g = Crafty.e("Generator").configure({width: 10000, height: 10000, treeDensity:.05})
+        var g = Crafty.e("Generator").configure({width: 6000, height: 6000, treeDensity:.05})
             .bind("PreIsland", function(data) {
                 player.attr({
                         x: data.center[0] + data.radius/2, 

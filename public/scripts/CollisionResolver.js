@@ -20,8 +20,10 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
             }
 
             if (this.has("Player") && data.obj.has("Trinket")) {
+                this.text("☹");
+                this.textColor("#FF0000");
                 this.fourway(0);
-                dialog.playDialog(0, 200, 30);
+                dialog.playDialog(0, 250, 30);
                 this.destroyWorld = true;
             }
         }
