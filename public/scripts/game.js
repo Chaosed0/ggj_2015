@@ -7,7 +7,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         './HurtEnemy',
         './Expires',
         './Pathing',
-        './generator'
+        './generator',
+		'./seedrandom'
     ], function(Crafty, $, util, Pathfinder, dialog) {
     var self = this;
     var map;   
@@ -15,6 +16,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     var height = $(document).height();
     var gameElem = document.getElementById('game');
 	var scale = 1;
+	var randomSeed;
+	var levelSeeds = [];
     window.level = 0;
     window.lastLevel = 10000;
     window.levelInc = 2000;
@@ -40,8 +43,20 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                 "audio/credits.ogg"
             ]
         });
+		
+		randomSeed = util.getUrlParameter("seed");
+		if (randomSeed === null) {
+			randomSeed = parseInt(Math.random() * 10000000).toString();
+		}
+		
+		console.log(randomSeed);
 
-
+		Math.seedrandom(randomSeed);	
+			
+		for (var i = 0; i < window.lastLevel/window.levelInc; i++) {
+			levelSeeds.push(parseInt(Math.random() * 100000000).toString());
+		}
+		
         Crafty.scene("Main");
     });
                         
@@ -49,6 +64,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                                     
         console.log("MAIN");
 
+		Math.seedrandom(levelSeeds.pop());
+		
         //Player
         var player = Crafty.e("Player, 2D, Canvas, Text, Fourway, CollisionResolver, StayOn, SlashAttack, Collision, Solid")
             .attr({ 
