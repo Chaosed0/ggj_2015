@@ -72,12 +72,14 @@ define(function() {
             return s;
         },
 
-        playDialog: function(length) {
+        playDialog: function(baseFreq, baseDur, length) {
             length = typeof length !== 'undefined' ? length : 20;
+            baseFreq = typeof baseFreq !== 'undefined' ? baseFreq : 100;
+            baseDur = typeof baseDur !== 'undefined' ? baseDur : 25;
 
             if (this.supportsAudio && length) {
-                var freq = parseInt(100 + Math.random() * 1200);
-                var duration = parseInt(25 + Math.random() * 50);
+                var freq = parseInt(baseFreq + Math.random() * 300);
+                var duration = parseInt(baseDur + Math.random() * 50);
 
                 var osc = this.audioContext.createOscillator();
                 osc.connect(this.audioContext.destination);
@@ -89,7 +91,7 @@ define(function() {
                 setTimeout(function() {
                     console.log(duration);
                     osc.stop(0);
-                    _this.playDialog(length-1);
+                    _this.playDialog(baseFreq, baseDur, length-1);
                 }, duration);
             }
         },

@@ -63,7 +63,7 @@ define(['crafty', 'jquery', './Util', './astar',
         var pathfinder = new Pathfinder();
         pathfinder.buildmap();
         //console.log(util.generateDialog());
-        util.playDialog();
+        //util.playDialog();
         //pathfinder.render();
     });
     

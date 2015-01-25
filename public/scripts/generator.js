@@ -73,6 +73,7 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
     	width: 6400,
     	height: 6400,
     	treeDensity: .2,
+    	races: [],
 
 
     	configure: function(properties) {
@@ -209,8 +210,69 @@ define(['crafty', './Util', './Polygon', 'numeric',], function(Crafty, util) {
 	        
 	        this.generateTrees(radius, center, this.treeDensity);
 
+	        this.generateRaces(5);
+	        this.generateNPCs(radius, center);
+
 	        return [radius, center];
 
     	},
+
+    	generateRaceCharacter: function() {
+    		return unescape("%u" + (255*(parseInt(Math.random()*50)+20) + 
+    			parseInt(Math.random() * 255)).toString(16));
+    	},
+
+    	generateRaces: function(numberRaces) {
+    		numberRaces = typeof numberRaces !== 'undefined' ? numberRaces : 1;
+    		for (var i = 0; i < numberRaces; i++) {
+    			var race = {};
+    			race.character = this.generateRaceCharacter();
+    			race.friendlyness = parseInt(Math.random() * 100);
+    			race.aggressiveness = parseInt(Math.random() * 100);
+    			race.baseFreq = parseInt(Math.random() * 1000);
+    			race.baseDur = 100 - parseInt(race.baseFreq/10);
+    			race.averageSize = this.tilesize/2 + parseInt(Math.random()*this.tilesize*2);
+    			race.population = parseInt(1000/race.averageSize);
+    			this.races.push(race);
+    		}
+    	},
+
+    	generateNPCs: function(radius, center) {
+    		for (var i = 0; i < this.races.length; i++) {
+    			var race = this.races[i];
+    			for (var j = 0; j < race.population; j++) {
+    				var w,h,x,y;
+
+    				while (true) {
+    					w = race.averageSize;
+    					h = race.averageSize;
+		                x = (center[0] + radius/2  + (.5 - Math.random()) * 3*radius/2);
+		                y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+
+		                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
+		                //var t2 = Crafty.map.search({_x: x+w, _y: y+h-4, _w: 1, _h: 4}, true);
+		                if (t1.length > 0) {
+		                    // Make sure it's not on water/bridge/trees
+		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree'])) {
+		                        break;
+		                    }
+		                }
+		            }
+
+    				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid")
+			            .attr({ 
+			                x: x, 
+			                y: y, 
+			                w: w, h: h,
+			                z: 10
+			            })
+			            .text(race.character)
+			            .textFont({size: w + "px"})
+			            .collision()
+			            .collisionresolver('Solid')
+			            .stayon("Ground");
+    			}
+    		}
+    	}
     });
 });
