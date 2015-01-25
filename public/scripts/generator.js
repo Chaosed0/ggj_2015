@@ -227,6 +227,8 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 	        this.generateRaces(radius, center, numberRaces);
 	        this.generateNPCs(radius, center);
 
+            this.generateTrinket(radius, center);
+
 	        return [radius, center];
 
     	},
@@ -235,6 +237,10 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     		return unescape("%u" + (255*(parseInt(Math.random()*50)+20) + 
     			parseInt(Math.random() * 255)).toString(16));
     	},
+
+        generateTrinketCharacter: function() {
+            return unescape("%u" + (9812 + parseInt(Math.random() * 12)).toString(16));
+        },
 
     	generateRaces: function(radius, center, numberRaces) {
     		numberRaces = typeof numberRaces !== 'undefined' ? numberRaces : 1;
@@ -261,7 +267,6 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     	},
 
     	generateNPCs: function(radius, center) {
-            var pathing = false;
     		for (var i = 0; i < this.races.length; i++) {
     			var race = this.races[i];
     			for (var j = 0; j < race.population; j++) {
@@ -279,7 +284,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
 		                if (t1.length > 0) {
 		                    // Make sure it's not on water/bridge/trees
-		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC'])) {
+		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player'])) {
 		                        break;
 		                    }
 		                }
@@ -293,7 +298,9 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			                w: w, h: h,
 			                z: 10,
 			                baseFreq: race.baseFreq,
-			                baseDur: race.baseDur
+			                baseDur: race.baseDur,
+                            homeCenter: race.homeCenter,
+                            homeRange: race.range
 			            })
 			            .text(race.character)
 			            .textFont({size: w + "px"})
@@ -303,14 +310,56 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 			            	dialog.playDialog(this.baseFreq, this.baseDur);
 			            });
 
-                    if(this.pathfinder) {
-                        //pathing = true;
+                    if(false && this.pathfinder) {
                         guy.addComponent(this.pathfinder, "Pathing")
                             .pathing(this.pathfinder, "Player");
                         guy.startPathing();
                     }
     			}
     		}
-    	}
+    	},
+
+        
+
+        generateTrinket: function(radius, center, size) {
+            size = typeof size !== 'undefined' ? size : this.tilesize*4;
+            var w = size, h = size;
+            var x,y;
+            while (true) {
+                x = (center[0] + radius/2  + (.5 - Math.random()) * 3*radius/2);
+                y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+
+                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
+                if (t1.length > 0) {
+                    // Make sure it's not on water/bridge/trees
+                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player'])) {
+
+                        // Make sure it's not near the Player
+                        var t2 = Crafty.map.search({_x: x-radius/4, _y: y-radius/4, _w: radius/2, _h: radius/2}, true);
+                        if (!util.searchContains([t2], ['Player'])) {
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            var trinket = Crafty.e("2D, Canvas, Text, Collision, Solid, Trinket")
+                .attr({
+                    x: x, y: y, w: w, h: h, z: 10, 
+                    colorTimer: 0, colorInterval: 500,
+                })
+                .text(this.generateTrinketCharacter())
+                .textFont({size: size + "px"})
+                .textColor(util.randomColor())
+                .collision()
+                .bind("EnterFrame", function(e) {
+                    this.colorTimer += e.dt;
+                    if (this.colorTimer >= this.colorInterval) {
+                        this.colorTimer -= this.colorInterval;
+                        this.textColor(util.randomColor());
+                    }
+                })
+        }
     });
 });
