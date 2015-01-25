@@ -25,7 +25,6 @@ define(['crafty', './Pathfinder',
     }
 
     var stopDialog = function() {
-        console.log("Dialog stopped");
         this._foundplayer= true;
         this._forceNewPath();
     }

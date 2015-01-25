@@ -126,9 +126,7 @@ define(['jquery'], function($) {
             	var _this = this;
             	setTimeout(function() {
             		_this.currentlyPlaying = false;
-                    console.log("Dialog stopped");
                     if(_this._entity) {
-                        console.log("Dialog stopped");
                         _this._entity.trigger("StopDialog");
                         delete _this._entity;
                     }
