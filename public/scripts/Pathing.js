@@ -18,7 +18,6 @@ define(['crafty', './Pathfinder',
 
             this._moveTowards(target.clone().subtract(pos));
 
-            console.log(target.x, target.y, pos.x, pos.y, pos.distance(target));
             if(pos.distance(target) < 4.0) {
                 this._currentpath.pop();
             }
@@ -32,7 +31,8 @@ define(['crafty', './Pathfinder',
         _pathfinder: null,
         _pathing: false,
         _currentpath: [],
-        _speed: 3,
+        _pathspeed: 3,
+        _directpathradius: 1000,
 
         _getPath: function() {
             var ents = Crafty(this._pathtocomp);
@@ -43,16 +43,28 @@ define(['crafty', './Pathfinder',
                 } else {
                     ent = ents.get(0);
                 }
-                var start = {x: this.x, y: this.y}
-                var dest = {x: ent.x, y: ent.y};
-                var path = this._pathfinder.findpath(start, dest);
+                var start = new Vec2d(this.x, this.y);
+                var dest = new Vec2d(ent.x, ent.y);
+                var path;
 
-                /*for(var i = 0; i < path.length; i++) {
-                    var pathnode = path[i];
-                    Crafty.e("2D, Canvas, Color")
-                        .attr({x: pathnode.x, y: pathnode.y, z: 10000, w: 4, h: 4})
-                        .color("#0000FF");
-                }*/
+                //Only try to actually pathfind if we're close enough that
+                // the player could tell that we're being dumb
+                if(dest.distance(start) > this._directpathradius) {
+                    path = [dest];
+                } else {
+                    if(this._pathfinder.checklos(start, dest)) {
+                        path = [dest];
+                    } else {
+                        path = this._pathfinder.findpath(start, dest);
+                    }
+
+                    /*for(var i = 0; i < path.length; i++) {
+                        var pathnode = path[i];
+                        Crafty.e("2D, Canvas, Color")
+                            .attr({x: pathnode.x, y: pathnode.y, z: 10000, w: 4, h: 4})
+                            .color("#0000FF");
+                    }*/
+                }
 
                 return path;
             } else {
@@ -63,8 +75,8 @@ define(['crafty', './Pathfinder',
         _moveTowards: function(dir) {
             var savedPos = {x: this.x, y: this.y};
             dir = dir.normalize();
-            this.x += dir.x * this._speed;
-            this.y += dir.y * this._speed;
+            this.x += dir.x * this._pathspeed;
+            this.y += dir.y * this._pathspeed;
             this.trigger("Moved", savedPos);
         },
 
@@ -80,8 +92,8 @@ define(['crafty', './Pathfinder',
 
         startPathing: function() {
             this._pathing = true;
-            this._currentpath = this._getPath();
-            this._nextpathtimer = 0;
+            //Set to random so not all entities path on the same frame
+            this._nextpathtimer = Math.floor(Math.random() * this._pathinterval);
             this.bind("EnterFrame", enterFrame);
         },
 
