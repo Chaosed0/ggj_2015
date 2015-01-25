@@ -15,12 +15,12 @@ define(['crafty', './Pathfinder',
             var pos = new Vec2d(this.x, this.y);
             var target_obj = this._currentpath[this._currentpath.length - 1];
             var target = new Vec2d(target_obj.x, target_obj.y);
-            console.log(target.x, target.y, pos.x, pos.y);
 
-            this._moveTowards(target.subtract(pos));
+            this._moveTowards(target.clone().subtract(pos));
 
-            if(pos.distance(target) < 2.0) {
-                this._currentPath.pop();
+            console.log(target.x, target.y, pos.x, pos.y, pos.distance(target));
+            if(pos.distance(target) < 4.0) {
+                this._currentpath.pop();
             }
         }
     }
