@@ -2,6 +2,8 @@ define(['jquery'], function($) {
 	var width, height;
 
 	var dialog = {
+		credits: false,
+
 		init: function(w, h) {
 			width = w;
 			height = h;
@@ -22,18 +24,18 @@ define(['jquery'], function($) {
         	var dx = p.x - t.x;
         	var dy = p.y - t.y;
 
-        	if (dx > 100 || dy > 100) {
+        	if (Math.abs(dx) > 100 || Math.abs(dy) > 100) {
         		var f;
 
         		//Horizontal
-        		if (Math.abs(dx) > Math.abs(dy)) {
-        			if (dx > 0) {
+        		if (Math.abs(dx) >= Math.abs(dy)) {
+        			if (dx >= 0) {
         				f = "☜";
         			} else {
         				f = "☞";
         			}
         		} else { //Vertical
-        			if (dy < 0) {
+        			if (dy <= 0) {
         				f = "☟";
         			} else {
         				f = "☝";
@@ -82,19 +84,21 @@ define(['jquery'], function($) {
         },
 
         currentlyPlaying: false,
-        playDialog: function(baseFreq, baseDur, length) {
+        playDialog: function(baseFreq, baseDur, length, wave) {
             if (!this.currentlyPlaying) {
                 this.currentlyPlaying = true;
                 var dialogText = this.generateDialog(length);
-                this._playDialog(dialogText, baseFreq, baseDur, length);
+                this._playDialog(dialogText, baseFreq, baseDur, length, wave);
             }
         },
 
-        _playDialog: function(dialogText, baseFreq, baseDur, length) {
+        _playDialog: function(dialogText, baseFreq, baseDur, length, wave) {
             length = typeof length !== 'undefined' ? length : 20;
             baseFreq = typeof baseFreq !== 'undefined' ? baseFreq : 100;
             baseDur = typeof baseDur !== 'undefined' ? baseDur : 25;
-
+            var waveTypes = ["square", 'triangle', 'sine', 'sawtooth'];
+          	console.log(wave);
+          	
             if (length) {
                 var freq = parseInt(baseFreq + Math.random() * 300);
                 var duration = parseInt(baseDur + Math.random() * 50);
@@ -103,7 +107,9 @@ define(['jquery'], function($) {
 	                var osc = this.audioContext.createOscillator();
 	                osc.connect(this.audioContext.destination);
 	                osc.frequency.value = freq;
-	                osc.type = ["square", 'triangle', 'sine', 'sawtooth'][Math.floor(Math.random() *4)];
+	                osc.type = typeof wave !== 'undefined' ? wave : 
+	                	waveTypes[parseInt(Math.random() * 4)];
+	                console.log(osc.type);
 	                osc.start(0);
 	            }
                 this.displayDialogText(dialogText, length);
@@ -113,7 +119,7 @@ define(['jquery'], function($) {
                 	if (_this.supportsAudio) {
                     	osc.stop(0);
                     }
-                    _this._playDialog(dialogText, baseFreq, baseDur, length-1);
+                    _this._playDialog(dialogText, baseFreq, baseDur, length-1, wave);
 
                 }, duration);
             } else {
@@ -127,7 +133,11 @@ define(['jquery'], function($) {
                         delete _this._entity;
                     }
 	                //this.dialogText.destroy();
-	                $("#dialog").html("");
+	                if (!_this.credits) {
+	                	$("#dialog").html("");
+	                } else {
+	                	$("#dialog").html("Made by <a href='http://straypixels.net/' target='_blank'>Ed Lu</a> and <a href='http://jeremyneiman.com' target='_blank'>Jeremy Neiman</a> ");
+	                }
             	}, 500);
             }
         }

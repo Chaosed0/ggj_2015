@@ -210,7 +210,7 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 
     		Crafty.background(this.waterColor);
 
-	        var radius = this.adjustToTilesize(Math.round(Math.min(width, height) * (.7 - (Math.random()/2))));
+	        var radius = this.adjustToTilesize(Math.round(Math.min(width, height) * (1 - (Math.random()/4))));
 	        var center = [width/2 - radius/2, height/2 - radius/2];
 
             this.trigger("PreIsland", {radius: radius, center: center});
@@ -223,11 +223,13 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 
             this.trigger("PostIsland");
 
+            this.generateTrinket(radius, center);
+
 	        var numberRaces = this.pickNumberRaces(radius);
 	        this.generateRaces(radius, center, numberRaces);
 	        this.generateNPCs(radius, center);
 
-            this.generateTrinket(radius, center);
+            
 
 	        return [radius, center];
 
@@ -271,8 +273,8 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     			var race = this.races[i];
     			for (var j = 0; j < race.population; j++) {
     				var w,h,x,y;
-
-    				while (true) {
+                    var count = 50;
+    				while (count > 0) {
     					w = race.averageSize;
     					h = race.averageSize;
 		                //x = (center[0] + radius/2  + (.5 - Math.random()) * 3*radius/2);
@@ -284,10 +286,11 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 		                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
 		                if (t1.length > 0) {
 		                    // Make sure it's not on water/bridge/trees
-		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player'])) {
+		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC', 'Player', 'Trinket'])) {
 		                        break;
 		                    }
 		                }
+                        count--;
 		            }
 
 
