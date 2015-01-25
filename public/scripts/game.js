@@ -14,11 +14,12 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     var width = $(document).width();
     var height = $(document).height();
     var gameElem = document.getElementById('game');
-	var scale = 1.0;
+	var scale = 1;
 
     dialog.init(width, height);
 
-    Crafty.init(width, height, gameElem);                        
+    Crafty.init(width, height, gameElem);
+    Crafty.pixelart(true);
 
     Crafty.scene("Load", function() {
 
@@ -33,7 +34,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                                     
         console.log("MAIN");
 
-        var g = Crafty.e("Generator");//.configure({width: 1000, height: 1000, treeDensity:.05});
+        var g = Crafty.e("Generator").configure({width: 10000, height: 10000, treeDensity:.2});
         var island = g.generateIsland(); 
         var radius = island[0];
         var center = island[1];

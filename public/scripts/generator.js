@@ -193,16 +193,23 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 	        }
     	},
 
+
+    	pickNumberRaces: function(radius) {
+    		if (radius >= 6000) {
+    			return 9;
+    		} else {
+    			return 4;
+    		}
+    	},
+
     	generateIsland: function(width, height) {
     		width = typeof width !== 'undefined' ? width : this.width;
     		height = typeof height !== 'undefined' ? height : this.height;
 
     		Crafty.background(this.waterColor);
 
-	        var radius = this.adjustToTilesize(Math.round(Math.min(width, height) * (.8 - (Math.random()/2))));
+	        var radius = this.adjustToTilesize(Math.round(Math.min(width, height) * (.7 - (Math.random()/2))));
 	        var center = [width/2 - radius/2, height/2 - radius/2];
-	        console.log(radius);
-	        console.log(center);
 
 	        this.generateLand(radius, center);
 
@@ -210,7 +217,8 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
 	        
 	        this.generateTrees(radius, center, this.treeDensity);
 
-	        this.generateRaces(5);
+	        var numberRaces = this.pickNumberRaces(radius);
+	        this.generateRaces(radius, center, numberRaces);
 	        this.generateNPCs(radius, center);
 
 	        return [radius, center];
@@ -222,21 +230,26 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     			parseInt(Math.random() * 255)).toString(16));
     	},
 
-    	generateRaces: function(numberRaces) {
+    	generateRaces: function(radius, center, numberRaces) {
     		numberRaces = typeof numberRaces !== 'undefined' ? numberRaces : 1;
+
     		for (var i = 0; i < numberRaces; i++) {
     			var race = {};
     			race.character = this.generateRaceCharacter();
     			race.friendlyness = parseInt(Math.random() * 100);
     			race.aggressiveness = parseInt(Math.random() * 100);
     			race.averageSize = this.tilesize/2 + parseInt(Math.random()*this.tilesize*2);
-    			//console.log(race.averageSize);
     			race.baseFreq = 1200 - race.averageSize * 16 + parseInt(Math.random() * 100);
-    			//console.log(race.baseFreq);
     			race.baseDur = 120 - parseInt(race.baseFreq/10);
-    			console.log(race.averageSize, race.baseFreq, race.baseDur);
+    			var w = parseInt(Math.sqrt(numberRaces));
+    			var blockSize = 3/2*radius/w;
+    			race.homeCenter = [
+    				center[0] - radius/4 + blockSize*(i % w) + blockSize/2,
+    				center[1] - radius/4 + blockSize*parseInt(i / w) + blockSize/2
+    			];
+    			race.range = blockSize/2 - parseInt(blockSize/race.averageSize/2);
     			
-    			race.population = parseInt(1000/race.averageSize);
+    			race.population = parseInt(300/race.averageSize);
     			this.races.push(race);
     		}
     	},
@@ -250,21 +263,23 @@ define(['crafty', './Util', './dialog', './Polygon', 'numeric',], function(Craft
     				while (true) {
     					w = race.averageSize;
     					h = race.averageSize;
-		                x = (center[0] + radius/2  + (.5 - Math.random()) * 3*radius/2);
-		                y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+		                //x = (center[0] + radius/2  + (.5 - Math.random()) * 3*radius/2);
+		                //y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
+		                x = parseInt(race.homeCenter[0] + race.range * (.5 - Math.random()));
+		                y = parseInt(race.homeCenter[1] + race.range * (.5 - Math.random()));
+
 
 		                var t1 = Crafty.map.search({_x: x, _y: y, _w: w, _h: h}, true);
-		                //var t2 = Crafty.map.search({_x: x+w, _y: y+h-4, _w: 1, _h: 4}, true);
 		                if (t1.length > 0) {
 		                    // Make sure it's not on water/bridge/trees
-		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree'])) {
+		                    if (!util.searchContains([t1], ['River', 'Bridge', 'Tree', 'NPC'])) {
 		                        break;
 		                    }
 		                }
 		            }
 
 
-    				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid")
+    				Crafty.e("2D, Canvas, Text, CollisionResolver, StayOn, Collision, Solid, NPC")
 			            .attr({ 
 			                x: x, 
 			                y: y, 

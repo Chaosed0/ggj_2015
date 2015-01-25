@@ -46,7 +46,6 @@ define(['jquery'], function($) {
 
         currentlyPlaying: false,
         playDialog: function(baseFreq, baseDur, length) {
-            console.log(baseFreq, baseDur);
             if (!this.currentlyPlaying) {
                 this.currentlyPlaying = true;
                 var dialogText = this.generateDialog(length);
@@ -77,9 +76,12 @@ define(['jquery'], function($) {
 
                 }, duration);
             } else {
-                this.currentlyPlaying = false;
-                //this.dialogText.destroy();
-                $("#dialog").html("");
+            	var _this = this;
+            	setTimeout(function() {
+            		_this.currentlyPlaying = false;
+	                //this.dialogText.destroy();
+	                $("#dialog").html("");
+            	}, 500);
             }
         }
 	};
