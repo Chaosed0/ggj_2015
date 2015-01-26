@@ -188,6 +188,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
 
+        dialog.currentlyPlaying = true;
         dialog._playDialog(window.inventory, 0, 300, window.inventory.length);
     });
     
