@@ -153,10 +153,10 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                             //Short-circuit
                             return false;
                         }
-                        y = y + Math.sign(deltay);
+                        y = y + (deltay == 0 ? 0 : deltay/Math.abs(deltay));
                         error = error - 1.0;
                     }
-                    x = x + Math.sign(deltax);
+                    x = x + (deltax == 0 ? 0 : deltax/Math.abs(deltax));
                 }
                 return true;
             },

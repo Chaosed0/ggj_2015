@@ -65,6 +65,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     Crafty.scene("Main", function () {
                                     
         console.log("MAIN");
+        Crafty.selected = true;
+        console.log(Crafty.selected);
 
 		Math.seedrandom(levelSeeds.pop());
 		
