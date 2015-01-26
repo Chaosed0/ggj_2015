@@ -21,10 +21,10 @@ define(['crafty', './dialog'], function(Crafty, dialog) {
 
             if (this.has("Player") && data.obj.has("Trinket") && !dialog.currentlyPlaying) {
                 window.inventory += data.obj._text;
-                this.text("☹");
-                this.textColor("#FF0000");
                 this.fourway(0);
                 if (window.level == window.lastLevel) {
+                    this.text("☹");
+                    this.textColor("#FF0000");
                     dialog.playDialog(0, 1, 200, "sawtooth");
                     Crafty.audio.stop();
                 } else {
