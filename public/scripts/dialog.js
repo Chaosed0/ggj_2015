@@ -79,7 +79,7 @@ define(['jquery'], function($) {
                 	this.x = -Crafty.viewport.x + width/2;
                 	this.y = -Crafty.viewport.y + 100;
                 });*/
-			var d = dialogText.substring(0, dialogText.length-i);
+			var d = dialogText.substring(0, dialogText.length-i+1);
 			$("#dialog").html(d);
         },
 

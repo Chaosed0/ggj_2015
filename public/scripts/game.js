@@ -20,6 +20,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
     window.level = 0;
     window.lastLevel = 10000;
     window.levelInc = 2000;
+    window.inventory = "";
 
     dialog.init(width, height);
 
@@ -186,6 +187,8 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
         Crafty.viewport.y = - (player.y - height/2.0/scale + player.h);
         Crafty.viewport.scale(scale);
         Crafty.pixelart(true);
+
+        dialog._playDialog(window.inventory, 0, 300, window.inventory.length);
     });
     
     Crafty.scene("Load");
