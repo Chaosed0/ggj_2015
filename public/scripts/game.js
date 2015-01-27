@@ -154,6 +154,9 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
             })
             .bind("PostIsland", function() {
                 var pathfinder = new Pathfinder();
+                pathfinder.buildmap();
+                this.pathfinder = pathfinder;
+
                 var w = 20;
                 var h = 20;
                 var x,y;
@@ -161,7 +164,7 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
 	                x = (center[0] + radius/2 + (.5 - Math.random()) * 3*radius/2);
 	                y = (center[1] + radius/2 + (.5 - Math.random()) * 3*radius/2);
 
-	                // Make sure the tree is on ground
+	                // Make sure the player is on ground
 	                var t1 = Crafty.map.search({_x: x,   _y: y+h-4, _w: 1, _h: 4}, true);
 	                var t2 = Crafty.map.search({_x: x+w, _y: y+h-4, _w: 1, _h: 4}, true);
 	                if (t1.length > 0 && t2.length > 0) {
@@ -175,9 +178,6 @@ define(['crafty', 'jquery', './Util', './Pathfinder', './dialog',
                 player.attr({ x: x, y: y, })
                     .textFont({size: this.tilesize + "px"})
                     .fourway(this.tilesize/4);
-
-                pathfinder.buildmap();
-                this.pathfinder = pathfinder;
             });
 
         

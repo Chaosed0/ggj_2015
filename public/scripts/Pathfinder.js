@@ -3,6 +3,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
     var gridsize = 32;
     var groundComponent = "Ground";
     var solidComponent = "Solid";
+    var defaultMaxSearch = 1000;
 
     var heuristic = function(start, end) {
         var rel = {x: end.x - start.x, y: end.y - start.y};
@@ -41,31 +42,43 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
             return path;
         }
 
-        var get_neighbors = function(tile) {
+        var isPassable = function(tile, dist) {
+            if(dist < 1) {
+                return true;
+            } if(dist === undefined || dist === 1 || !map[getTileId(tile)]) {
+                return map[getTileId(tile)];
+            } else {
+                return isPassable({x: tile.x-1, y: tile.y}, dist-1) &&
+                       isPassable({x: tile.x+1, y: tile.y}, dist-1) &&
+                       isPassable({x: tile.x, y: tile.y-1}, dist-1) &&
+                       isPassable({x: tile.x, y: tile.y+1}, dist-1);
+            }
+        }
+
+        // Gets the neighbors of a tile that are passable.
+        // If a non-passable tile is within dist of the passed tile, then it is not returned.
+        //  dist defaults to 1.
+        var get_neighbors = function(tile, dist) {
+            if(dist === undefined) {
+                dist = 1;
+            }
+            var leftTile = {x: tile.x-1, y: tile.y}
+            var rightTile = {x: tile.x+1, y: tile.y}
+            var upTile = {x: tile.x, y: tile.y-1};
+            var downTile = {x: tile.x, y: tile.y+1};
+
             var neighbors = [];
-            if(tile.x > 0) {
-                var leftTile = {x: tile.x-1, y: tile.y}
-                if(map[getTileId(leftTile)]) {
-                    neighbors.push(leftTile);
-                }
+            if(tile.x > 0 && isPassable(leftTile, dist)) {
+                neighbors.push(leftTile);
             }
-            if(tile.x < width-1) {
-                var rightTile = {x: tile.x+1, y: tile.y}
-                if(map[getTileId(rightTile)]) {
-                    neighbors.push(rightTile);
-                }
+            if(tile.x < width-1 && isPassable(rightTile, dist)) {
+                neighbors.push(rightTile);
             }
-            if(tile.y > 0) {
-                var upTile = {x: tile.x, y: tile.y-1};
-                if(map[getTileId(upTile)]) {
-                    neighbors.push(upTile);
-                }
+            if(tile.y > 0 && isPassable(upTile, dist)) {
+                neighbors.push(upTile);
             }
-            if(tile.y < height-1) {
-                var downTile = {x: tile.x, y: tile.y+1};
-                if(map[getTileId(downTile)]) {
-                    neighbors.push(downTile);
-                }
+            if(tile.y < height-1 && isPassable(downTile, dist)) {
+                neighbors.push(downTile);
             }
             return neighbors;
         }
@@ -143,13 +156,13 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 var x = startTile.x
                 var y = startTile.y
                 while (x != endTile.x) {
-                    if(map[getTileId({x:x, y:y})] == false) {
+                    if(!isPassable({x:x, y:y})) {
                         //Short-circuit
                         return false;
                     }
                     error = error + deltaerr
                     while (error >= 0.5) {
-                        if(map[getTileId({x:x, y:y})] == false) {
+                        if(!isPassable({x:x, y:y})) {
                             //Short-circuit
                             return false;
                         }
@@ -161,12 +174,22 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                 return true;
             },
 
-            findpath: function(start, end, maxsearch) {
+            findpath: function(start, end, maxsearch, size) {
+                var maxNeighborDist = 1;
                 var startTile = getTileForCoord(start);
                 var endTile = getTileForCoord(end);
 
                 var startTileId = getTileId(startTile);
                 var endTileId = getTileId(endTile);
+
+                if(size !== undefined) {
+                    maxNeighborDist = Math.ceil(size / gridsize);
+                }
+
+                if(maxsearch !== undefined) {
+                    maxsearch = defaultMaxSearch;
+                }
+
 
                 if(!map[endTileId]) {
                     console.log("WARNING: endTile is no good");
@@ -208,7 +231,7 @@ define(['crafty', './Util', './PriorityQueue'], function(Crafty, Util, PriorityQ
                     }
 
                     closedset.add(bestCostTileId);
-                    var neighbors = get_neighbors(bestCostTile);
+                    var neighbors = get_neighbors(bestCostTile, maxNeighborDist);
 
                     for(var i = 0; i < neighbors.length; i++) {
                         var neighbor = neighbors[i];

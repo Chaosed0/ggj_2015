@@ -90,7 +90,7 @@ define(['crafty', './Pathfinder',
                         if(this._pathfinder.checklos(start, dest)) {
                             path = [dest];
                         } else {
-                            path = this._pathfinder.findpath(start, dest, 1000);
+                            path = this._pathfinder.findpath(start, dest, 1000, Math.max(this.w, this.h));
                             if(path == []) {
                                 //fall back to stupid ai
                                 path = [dest];
@@ -109,9 +109,12 @@ define(['crafty', './Pathfinder',
         _moveTowards: function(dir) {
             var savedPos = {x: this.x, y: this.y};
             dir = dir.normalize();
+
+            //Trigger Moved twice so collision resolver can do the right thing
             this.x += dir.x * this._pathspeed;
-            this.y += dir.y * this._pathspeed;
             this.trigger("Moved", savedPos);
+            this.y += dir.y * this._pathspeed;
+            this.trigger("Moved", {x: this.x, y: savedPos.y});
         },
 
         init: function() {
