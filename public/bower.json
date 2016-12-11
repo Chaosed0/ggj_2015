@@ -22,5 +22,6 @@
     "requirejs": "~2.1.15",
     "js-priority-queue": "~0.1.1",
     "seedrandom": "~2.3.11"
+    "numeric": "~1.2.6"
   }
 }
